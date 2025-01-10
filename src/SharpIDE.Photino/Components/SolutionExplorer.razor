@@ -53,12 +53,12 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await Task.Run(() => LoadSolution("D:/matth/Documents/Git/amazon/ClientPortal.sln"));
+		await Task.Run(() => LoadSolution("C:/Users/Matthew/Documents/Git/amazon/ClientPortal.sln"));
 	}
 
 	private void LoadSolution(string solutionPath)
 	{
-		var solutionFile = GetNodesInSolution.ParseSolutionFileFromPath("D:/matth/Documents/Git/amazon/ClientPortal.sln");
+		var solutionFile = GetNodesInSolution.ParseSolutionFileFromPath("C:/Users/Matthew/Documents/Git/amazon/ClientPortal.sln");
 		ArgumentNullException.ThrowIfNull(solutionFile);
 		_solutionFile = solutionFile;
 		var rootNodes = solutionFile.ProjectsByGuid.Values.Where(p => p.ParentProjectGuid == null).OrderBy(s => s.ProjectName).ToList();
