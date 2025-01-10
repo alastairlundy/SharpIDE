@@ -1,16 +1,23 @@
-﻿
+﻿<MudText>
+	@Path.GetFileName(FilePath)
+	@if (_unsavedEdits)
+	{
+		<span>*</span>
+	}
+</MudText>
 <style>
 	#my-editor-id {
 		height: calc(100vh - 100px);
 	}
 </style>
-<StandaloneCodeEditor Id="my-editor-id" ConstructionOptions="@EditorConstructionOptions" />
+<StandaloneCodeEditor Id="my-editor-id" ConstructionOptions="@EditorConstructionOptions" OnDidChangeModelContent="evnt => _unsavedEdits = true" OnDidBlurEditorText="@SaveFileToDisk" />
 
 @code {
 	[Parameter, EditorRequired]
     public string FilePath { get; set; } = null!;
 
 	private string? _fileContent;
+	private bool _unsavedEdits = false;
 
 	private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
 	{
@@ -34,6 +41,19 @@
 		}
 		var fileContent = await File.ReadAllTextAsync(FilePath);
 		_fileContent = fileContent;
+	}
+
+	private async Task SaveFileToDisk(object obj)
+	{
+		if (_unsavedEdits is false)
+		{
+			return;
+		}
+		var editor = obj as StandaloneCodeEditor;
+		ArgumentNullException.ThrowIfNull(editor, nameof(editor));
+		var editorTextValue = await editor.GetValue();
+		await File.WriteAllTextAsync(FilePath, editorTextValue);
+		_unsavedEdits = false;
 	}
 
 }
