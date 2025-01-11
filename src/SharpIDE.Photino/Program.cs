@@ -22,7 +22,7 @@ public class Program
 		app.MainWindow
 			.SetSize(1400, 800)
 			.SetDevToolsEnabled(true)
-			.SetMaximized(true)
+			//.SetMaximized(true)
 			.SetLogVerbosity(0)
 			//.SetIconFile("favicon.ico")
 			.SetTitle("SharpIDE.Photino");

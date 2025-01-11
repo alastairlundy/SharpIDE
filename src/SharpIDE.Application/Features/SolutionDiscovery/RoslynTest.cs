@@ -9,11 +9,9 @@ public static class RoslynTest
 {
 	public static async Task Analyse(string solutionFilePath)
 	{
-
-
 		var workspace = MSBuildWorkspace.Create();
 		var timer = Stopwatch.StartNew();
-		var solution = await workspace.OpenSolutionAsync(solutionFilePath);
+		var solution = await workspace.OpenSolutionAsync(solutionFilePath, new Progress());
 		timer.Stop();
 		Console.WriteLine($"Solution loaded in {timer.ElapsedMilliseconds}ms");
 		Console.WriteLine();

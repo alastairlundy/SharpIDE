@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
 using Roslyn.Benchmarks;
 
-BenchmarkRunner.Run<MSBuildWorkspaceBenchmarks>();
+//BenchmarkRunner.Run<CreateWorkspaceBenchmarks>();
+BenchmarkRunner.Run<ParseSolutionBenchmarks>();

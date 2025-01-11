@@ -1,14 +1,10 @@
-﻿using System.Diagnostics;
-using BenchmarkDotNet.Attributes;
-using Microsoft.CodeAnalysis;
+﻿using BenchmarkDotNet.Attributes;
 using Microsoft.CodeAnalysis.MSBuild;
 
 namespace Roslyn.Benchmarks;
 
-public class MSBuildWorkspaceBenchmarks
+public class CreateWorkspaceBenchmarks
 {
-	private const string _solutionFilePath = "C:/Users/Matthew/Documents/Git/StatusApp/StatusApp.sln";
-	
 	// | Method                    | Mean     | Error    | StdDev   |
 	// |-------------------------- |---------:|---------:|---------:|
 	// | CreateWorkspaceNoParams   | 10.88 us | 0.045 us | 0.042 us |
@@ -32,11 +28,4 @@ public class MSBuildWorkspaceBenchmarks
 		return workspace;
 	}
 
-	// [Benchmark]
-	// public async Task<Solution> ParseSolutionFileFromPath()
-	// {
-	// 	var workspace = MSBuildWorkspace.Create();
-	// 	var solution = await workspace.OpenSolutionAsync(_solutionFilePath);
-	// 	return solution;
-	// }
 }
