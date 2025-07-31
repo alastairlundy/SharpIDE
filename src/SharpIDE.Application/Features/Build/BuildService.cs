@@ -34,7 +34,6 @@ public class BuildService
 			buildResult2.ExecuteAsync((BuildSubmission test) =>
 			{
 				buildCompleteTcs.SetResult(test.BuildResult!);
-				Console.WriteLine("Build submission completed.");
 			}, null);
 			//var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest); // This is a convenience to essentially do the same thing.
 			var buildResult = await buildCompleteTcs.Task.ConfigureAwait(false);
