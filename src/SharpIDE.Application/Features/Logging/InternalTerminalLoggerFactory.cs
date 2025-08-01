@@ -7,6 +7,12 @@ public class InternalTerminalLoggerFactory
 {
 	public static ILogger CreateLogger()
 	{
+		var logger = CreateLogger("FORCECONSOLECOLOR", LoggerVerbosity.Minimal);
+		return logger;
+	}
+
+	public static ILogger CreateLogger(string parameters, LoggerVerbosity loggerVerbosity)
+	{
 		var type = Type.GetType("Microsoft.Build.Logging.TerminalLogger, Microsoft.Build");
 
 		if (type == null) throw new Exception("TerminalLogger type not found");
@@ -26,6 +32,9 @@ public class InternalTerminalLoggerFactory
 			obj: null,
 			parameters: [args, supportsAnsi, outputIsScreen, originalConsoleMode]);
 
-		return (ILogger)logger!; // This will be an ILogger (or INodeLogger) instance
+		var castLogger = (ILogger)logger!;
+		castLogger.Parameters = parameters;
+		castLogger.Verbosity = loggerVerbosity;
+		return castLogger;
 	}
 }

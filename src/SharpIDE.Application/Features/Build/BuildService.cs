@@ -1,9 +1,5 @@
 using System.Diagnostics;
-using System.Text;
-using System.Threading.Channels;
 using Microsoft.Build.Execution;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Logging;
 using SharpIDE.Application.Features.Logging;
 
 namespace SharpIDE.Application.Features.Build;
@@ -24,8 +20,6 @@ public class BuildService
 		var normalOut = Console.Out;
 		Console.SetOut(BuildTextWriter);
 		var terminalLogger = InternalTerminalLoggerFactory.CreateLogger();
-		terminalLogger.Parameters = "FORCECONSOLECOLOR";
-		terminalLogger.Verbosity = LoggerVerbosity.Minimal;
 		var buildParameters = new BuildParameters
 		{
 			Loggers =
