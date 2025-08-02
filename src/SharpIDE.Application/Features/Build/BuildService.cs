@@ -48,23 +48,11 @@ public class BuildService
 			hostServices: null,
 			flags: BuildRequestDataFlags.None);
 
-		await Task.Run(async () =>
-		{
-			await BuildStarted.Invoke().ConfigureAwait(false);
-			var buildCompleteTcs = new TaskCompletionSource<BuildResult>();
-			BuildManager.DefaultBuildManager.BeginBuild(buildParameters);
-			var buildResult2 = BuildManager.DefaultBuildManager.PendBuildRequest(buildRequest);
-			var timer = Stopwatch.StartNew();
-			buildResult2.ExecuteAsync((BuildSubmission test) =>
-			{
-				buildCompleteTcs.SetResult(test.BuildResult!);
-			}, null);
-			//var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest); // This is a convenience to essentially do the same thing.
-			var buildResult = await buildCompleteTcs.Task.ConfigureAwait(false);
-			timer.Stop();
-			BuildManager.DefaultBuildManager.EndBuild();
-			Console.WriteLine($"Build result: {buildResult.OverallResult} in {timer.ElapsedMilliseconds}ms");
-		}).ConfigureAwait(false);
+		await BuildStarted.Invoke().ConfigureAwait(false);
+		var timer = Stopwatch.StartNew();
+		var buildResult = await BuildManager.DefaultBuildManager.BuildAsync(buildParameters, buildRequest).ConfigureAwait(false);
+		timer.Stop();
+		Console.WriteLine($"Build result: {buildResult.OverallResult} in {timer.ElapsedMilliseconds}ms");
 	}
 
 	private static string[] TargetsToBuild(BuildType buildType)
