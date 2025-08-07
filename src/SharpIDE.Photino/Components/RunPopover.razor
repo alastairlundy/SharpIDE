@@ -2,26 +2,28 @@
 
 <div @onmouseover="@(() => _open = true)">
 	<MudPopover Duration="100" OverflowBehavior="OverflowBehavior.FlipNever" Open="@true" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopRight">
-		<div class="pl-2" @onmouseleave="@(() => _open = false)">
-			<MudStack Justify="Justify.FlexEnd" Class="pa-0 ma-0" Spacing="0">
-				<MudButton Disabled="true" Style="min-width: 20px; align-self: end">
-					<MudIcon Icon="@Icons.Material.Filled.PlayArrow" Size="Size.Medium" Color="Color.Default"/>
-				</MudButton>
-					@if (SolutionModel?.AllProjects?.Count is >= 0)
+		<MudStack @onmouseleave="@(() => _open = false)" Justify="Justify.FlexEnd" Class="pa-0 ma-0" Spacing="0">
+			<MudButton Disabled="true" Style="min-width: 20px; align-self: end">
+				<MudIcon Icon="@Icons.Material.Filled.PlayArrow" Size="Size.Medium" Color="Color.Default"/>
+			</MudButton>
+			<MudList T="string" Dense="true" Class="pa-0 ma-0">
+				@if (SolutionModel?.AllProjects?.Count is >= 0)
+				{
+					@foreach (var project in SolutionModel.AllProjects)
 					{
-						@foreach (var project in SolutionModel.AllProjects)
-						{
-							<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+						<MudListItem T="string" Dense="true" Class="pa-0 ma-0 pl-2" Style="max-height: 36px;">
+							<MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Class="pa-0 ma-0">
 								<MudText>@project.Name</MudText>
 								<MudSpacer/>
 								<MudButton Style="min-width: 20px;">
 									<MudIcon Icon="@Icons.Material.Filled.PlayArrow" Size="Size.Medium" Color="Color.Success"/>
 								</MudButton>
 							</MudStack>
-						}
+						</MudListItem>
 					}
-			</MudStack>
-		</div>
+				}
+			</MudList>
+		</MudStack>
 	</MudPopover>
 
 	<MudButton Style="min-width: 20px;" >
