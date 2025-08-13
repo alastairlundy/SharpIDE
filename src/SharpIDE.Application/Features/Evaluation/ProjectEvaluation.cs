@@ -14,7 +14,6 @@ public static class ProjectEvaluation
 
 		var project = _projectCollection.LoadProject(projectFilePath);
 		Console.WriteLine($"ProjectEvaluation: loaded {project.FullPath}");
-		//var outputType = project.GetProperty("OutputType");
 		return project;
 	}
 }
