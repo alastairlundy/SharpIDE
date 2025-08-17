@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 
 namespace SharpIDE.Application.Features.SolutionDiscovery;
 
@@ -9,22 +10,23 @@ public static class TreeMapperV2
 		return folder.Files
 			.Concat(folder.Folders.SelectMany(sub => sub.GetAllFiles()));
 	}
-	public static List<SharpIdeFolder> GetSubFolders(string csprojectPath)
+	public static List<SharpIdeFolder> GetSubFolders(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel)
 	{
 		var projectDirectory = Path.GetDirectoryName(csprojectPath)!;
 		var rootFolder = new SharpIdeFolder
 		{
+			Parent = sharpIdeProjectModel,
 			Path = projectDirectory,
 			Name = null!,
 			Files = [],
 			Folders = []
 		};
-		var subFolders = rootFolder.GetSubFolders();
+		var subFolders = rootFolder.GetSubFolders(sharpIdeProjectModel);
 		return subFolders;
 	}
 
 	private static readonly string[] _excludedFolders = ["bin", "obj", "node_modules"];
-	public static List<SharpIdeFolder> GetSubFolders(this SharpIdeFolder folder)
+	public static List<SharpIdeFolder> GetSubFolders(this SharpIdeFolder folder, IExpandableSharpIdeNode parent)
 	{
 		var directoryInfo = new DirectoryInfo(folder.Path);
 		ConcurrentBag<SharpIdeFolder> subFolders = [];
@@ -45,33 +47,20 @@ public static class TreeMapperV2
 
 		Parallel.ForEach(subFolderInfos, subFolderInfo =>
 		{
-			var subFolder = new SharpIdeFolder
-			{
-				Path = subFolderInfo.FullName,
-				Name = subFolderInfo.Name,
-				Files = GetFiles(subFolderInfo),
-				Folders = new SharpIdeFolder
-				{
-					Path = subFolderInfo.FullName,
-					Name = subFolderInfo.Name,
-					Files = [],
-					Folders = []
-				}.GetSubFolders()
-			};
-
+			var subFolder = new SharpIdeFolder(subFolderInfo, parent);
 			subFolders.Add(subFolder);
 		});
 
 		return subFolders.ToList();
 	}
 
-	public static List<SharpIdeFile> GetFiles(string csprojectPath)
+	public static List<SharpIdeFile> GetFiles(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel)
 	{
 		var projectDirectory = Path.GetDirectoryName(csprojectPath)!;
 		var directoryInfo = new DirectoryInfo(projectDirectory);
-		return GetFiles(directoryInfo);
+		return GetFiles(directoryInfo, sharpIdeProjectModel);
 	}
-	public static List<SharpIdeFile> GetFiles(DirectoryInfo directoryInfo)
+	public static List<SharpIdeFile> GetFiles(this DirectoryInfo directoryInfo, IExpandableSharpIdeNode parent)
 	{
 		List<FileInfo> fileInfos;
 		try
@@ -83,10 +72,11 @@ public static class TreeMapperV2
 			return [];
 		}
 
-		return fileInfos.Select(f => new SharpIdeFile
+		return fileInfos.Select(f => new SharpIdeFile(f.FullName, f.Name, parent)
 		{
 			Path = f.FullName,
-			Name = f.Name
+			Name = f.Name,
+			Parent = parent
 		}).ToList();
 	}
 }

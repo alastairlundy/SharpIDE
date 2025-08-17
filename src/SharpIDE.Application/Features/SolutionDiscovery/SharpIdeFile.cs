@@ -1,9 +1,19 @@
-﻿using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
+﻿using System.Diagnostics.CodeAnalysis;
+using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 
 namespace SharpIDE.Application.Features.SolutionDiscovery;
 
-public class SharpIdeFile : ISharpIdeNode
+public class SharpIdeFile : ISharpIdeNode, IChildSharpIdeNode
 {
+	public required IExpandableSharpIdeNode Parent { get; set; }
 	public required string Path { get; set; }
 	public required string Name { get; set; }
+
+	[SetsRequiredMembers]
+	internal SharpIdeFile(string fullPath, string name, IExpandableSharpIdeNode parent)
+	{
+		Path = fullPath;
+		Name = name;
+		Parent = parent;
+	}
 }

@@ -11,53 +11,11 @@ public static class VsPersistenceMapper
 		// This intermediate model is pretty much useless, but I have left it around as we grab the project nodes with it, which we might use later.
 		var intermediateModel = await IntermediateMapper.GetIntermediateModel(solutionFilePath, cancellationToken);
 
-		var solutionName = Path.GetFileName(solutionFilePath);
-		var allProjects = new HashSet<SharpIdeProjectModel>();
-		var solutionModel = new SharpIdeSolutionModel
-		{
-			Name = solutionName,
-			FilePath = solutionFilePath,
-			Projects = intermediateModel.Projects.Select(s => GetSharpIdeProjectModel(s, allProjects)).ToList(),
-			AllProjects = allProjects,
-			Folders = intermediateModel.SolutionFolders.Select(s => new SharpIdeSolutionFolder
-			{
-				Name = s.Model.Name,
-				Files = s.Files.Select(GetSharpIdeFile).ToList(),
-				Folders = s.Folders.Select(x => GetSharpIdeSolutionFolder(x, allProjects)).ToList(),
-				Projects = s.Projects.Select(x => GetSharpIdeProjectModel(x, allProjects)).ToList()
-			}).ToList(),
-		};
+		var solutionModel = new SharpIdeSolutionModel(solutionFilePath, intermediateModel);
 
 		timer.Stop();
 		Console.WriteLine($"Solution model fully created in {timer.ElapsedMilliseconds} ms");
 
 		return solutionModel;
 	}
-	private static SharpIdeProjectModel GetSharpIdeProjectModel(IntermediateProjectModel projectModel, HashSet<SharpIdeProjectModel> allProjects)
-	{
-		var project = new SharpIdeProjectModel
-		{
-			Name = projectModel.Model.ActualDisplayName,
-			FilePath = projectModel.FullFilePath,
-			Files = TreeMapperV2.GetFiles(projectModel.FullFilePath),
-			Folders = TreeMapperV2.GetSubFolders(projectModel.FullFilePath),
-			MsBuildEvaluationProjectTask = ProjectEvaluation.GetProject(projectModel.FullFilePath)
-		};
-		allProjects.Add(project);
-		return project;
-	}
-
-	private static SharpIdeSolutionFolder GetSharpIdeSolutionFolder(IntermediateSlnFolderModel folderModel, HashSet<SharpIdeProjectModel> allProjects) => new SharpIdeSolutionFolder()
-	{
-		Name = folderModel.Model.Name,
-		Files = folderModel.Files.Select(GetSharpIdeFile).ToList(),
-		Folders = folderModel.Folders.Select(s => GetSharpIdeSolutionFolder(s, allProjects)).ToList(),
-		Projects = folderModel.Projects.Select(s => GetSharpIdeProjectModel(s, allProjects)).ToList()
-	};
-
-	private static SharpIdeFile GetSharpIdeFile(IntermediateSlnFolderFileModel fileModel) => new SharpIdeFile
-	{
-		Path = fileModel.FullPath,
-		Name = fileModel.Name
-	};
 }
