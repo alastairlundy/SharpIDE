@@ -52,6 +52,21 @@
 	private MudMenu _contextMenuRef = null!;
 	private SharpIdeProjectModel? _contextMenuProject;
 
+	protected override async Task OnParametersSetAsync()
+	{
+		if (SelectedFile is null) return;
+		var parent = SelectedFile.Parent;
+		parent.Expanded = true;
+		while (parent is IChildSharpIdeNode childNode)
+		{
+			if (childNode is not IExpandableSharpIdeNode expandableNode) throw new InvalidOperationException("Parent node must implement IExpandableSharpIdeNode");
+			expandableNode.Expanded = true;
+			parent = childNode.Parent;
+		}
+		if (parent is not SharpIdeSolutionModel solutionModel) throw new InvalidOperationException("Parent node must be a SharpIdeSolutionModel");
+		solutionModel.Expanded = true;
+	}
+
 	private async Task InvokeSelectedFileChanged(SharpIdeFile file)
 	{
 		SelectedFile = file;
