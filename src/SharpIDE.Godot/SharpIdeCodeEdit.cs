@@ -34,13 +34,32 @@ public partial class SharpIdeCodeEdit : CodeEdit
 	
 	public override void _Ready()
 	{
+		SyntaxHighlighter = _syntaxHighlighter;
 		_popupMenu = GetNode<PopupMenu>("CodeFixesMenu");
 		_popupMenu.IdPressed += OnCodeFixSelected;
 		CodeCompletionRequested += OnCodeCompletionRequested;
 		CodeFixesRequested += OnCodeFixesRequested;
 		CaretChanged += OnCaretChanged;
 		TextChanged += OnTextChanged;
-		SyntaxHighlighter = _syntaxHighlighter;
+		SymbolHovered += OnSymbolHovered;
+		SymbolValidate += OnSymbolValidate;
+		SymbolLookup += OnSymbolLookup;
+	}
+
+	private void OnSymbolLookup(string symbol, long line, long column)
+	{
+		GD.Print($"Symbol lookup requested: {symbol} at line {line}, column {column}");
+	}
+
+	private void OnSymbolValidate(string symbol)
+	{
+		GD.Print($"Symbol validating: {symbol}");
+		SetSymbolLookupWordAsValid(true);
+	}
+
+	private void OnSymbolHovered(string symbol, long line, long column)
+	{
+		GD.Print($"Symbol hovered: {symbol}");
 	}
 
 	private void OnCaretChanged()
