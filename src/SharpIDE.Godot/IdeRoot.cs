@@ -30,7 +30,7 @@ public partial class IdeRoot : Control
 		_runMenuButton.Pressed += () =>
 		{
 			var popupMenuPosition = _runMenuButton.GlobalPosition;
-			const int buttonHeight = 44;
+			const int buttonHeight = 40;
 			_runMenuPopup.Position = new Vector2I((int)popupMenuPosition.X, (int)popupMenuPosition.Y + buttonHeight);
 			_runMenuPopup.Popup();
 		};
@@ -62,7 +62,7 @@ public partial class IdeRoot : Control
 				var runnableProjects = solutionModel.AllProjects.Where(p => p.IsRunnable).ToList();
 				await this.InvokeAsync(() =>
 				{
-					var runMenuPopupVbox = _runMenuPopup.GetNode<VBoxContainer>("VBoxContainer");
+					var runMenuPopupVbox = _runMenuPopup.GetNode<VBoxContainer>("MarginContainer/VBoxContainer");
 					foreach (var project in runnableProjects)
 					{
 						var runMenuItem = _runMenuItemScene.Instantiate<RunMenuItem>();
