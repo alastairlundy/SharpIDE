@@ -34,7 +34,7 @@ public class DebuggingService
 		var debugProtocolHost = new DebugProtocolHost(process.StandardInput.BaseStream, process.StandardOutput.BaseStream, false);
 		debugProtocolHost.LogMessage += (sender, args) =>
 		{
-			Console.WriteLine($"Log message: {args.Message}");
+			//Console.WriteLine($"Log message: {args.Message}");
 		};
 		debugProtocolHost.EventReceived += (sender, args) =>
 		{

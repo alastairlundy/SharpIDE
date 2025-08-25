@@ -12,8 +12,15 @@ public static class NodeExtensions
         //WorkerThreadPool.AddTask();
         Callable.From(() =>
         {
-            workItem();
-            taskCompletionSource.SetResult();
+            try
+            {
+                workItem();
+                taskCompletionSource.SetResult();
+            }
+            catch (Exception ex)
+            {
+                taskCompletionSource.SetException(ex);
+            }
         }).CallDeferred();
         return taskCompletionSource.Task;
     }

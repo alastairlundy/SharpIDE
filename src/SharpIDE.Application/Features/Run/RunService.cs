@@ -89,6 +89,7 @@ public class RunService
 			project.OpenInRunPanel = true;
 			GlobalEvents.InvokeProjectsRunningChanged();
 			GlobalEvents.InvokeStartedRunningProject();
+			GlobalEvents.InvokeProjectStartedRunning(project);
 			project.InvokeProjectStartedRunning();
 			await process.WaitForExitAsync().WaitAsync(project.RunningCancellationTokenSource.Token).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 			if (project.RunningCancellationTokenSource.IsCancellationRequested)
@@ -118,6 +119,7 @@ public class RunService
 		if (project.RunningCancellationTokenSource is null) throw new InvalidOperationException($"Project {project.Name} does not have a running cancellation token source.");
 
 		await project.RunningCancellationTokenSource.CancelAsync().ConfigureAwait(false);
+		GlobalEvents.InvokeProjectStoppedRunning(project);
 	}
 
 	private string GetRunArguments(SharpIdeProjectModel project)
