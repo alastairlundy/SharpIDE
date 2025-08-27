@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
@@ -6,6 +5,7 @@ using Microsoft.Build.Locator;
 using SharpIDE.Application.Features.Analysis;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 using SharpIDE.Godot.Features.Run;
+using SharpIDE.Godot.Features.SolutionExplorer;
 
 namespace SharpIDE.Godot;
 

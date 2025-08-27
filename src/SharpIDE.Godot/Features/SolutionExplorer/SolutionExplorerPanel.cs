@@ -2,7 +2,7 @@ using Godot;
 using SharpIDE.Application.Features.SolutionDiscovery;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 
-namespace SharpIDE.Godot;
+namespace SharpIDE.Godot.Features.SolutionExplorer;
 
 public partial class SolutionExplorerPanel : Panel
 {
