@@ -58,6 +58,7 @@ public partial class IdeRoot : Control
 			GD.Print($"Selected: {path}");
 			var solutionModel = await VsPersistenceMapper.GetSolutionModel(path);
 			_solutionExplorerPanel.SolutionModel = solutionModel;
+			_sharpIdeCodeEdit.Solution = solutionModel;
 			Callable.From(_solutionExplorerPanel.RepopulateTree).CallDeferred();
 			RoslynAnalysis.StartSolutionAnalysis(path);
 				

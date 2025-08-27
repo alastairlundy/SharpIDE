@@ -34,6 +34,7 @@ public class SharpIdeSolutionModel : ISharpIdeNode, IExpandableSharpIdeNode
 	public required List<SharpIdeProjectModel> Projects { get; set; }
 	public required List<SharpIdeSolutionFolder> Folders { get; set; }
 	public required HashSet<SharpIdeProjectModel> AllProjects { get; set; }
+	public required HashSet<SharpIdeFile> AllFiles { get; set; }
 	public bool Expanded { get; set; }
 
 	[SetsRequiredMembers]
@@ -41,10 +42,11 @@ public class SharpIdeSolutionModel : ISharpIdeNode, IExpandableSharpIdeNode
 	{
 		var solutionName = Path.GetFileName(solutionFilePath);
 		AllProjects = [];
+		AllFiles = [];
 		Name = solutionName;
 		FilePath = solutionFilePath;
-		Projects = intermediateModel.Projects.Select(s => new SharpIdeProjectModel(s, AllProjects, this)).ToList();
-		Folders = intermediateModel.SolutionFolders.Select(s => new SharpIdeSolutionFolder(s, AllProjects, this)).ToList();
+		Projects = intermediateModel.Projects.Select(s => new SharpIdeProjectModel(s, AllProjects, AllFiles, this)).ToList();
+		Folders = intermediateModel.SolutionFolders.Select(s => new SharpIdeSolutionFolder(s, AllProjects, AllFiles, this)).ToList();
 	}
 }
 public class SharpIdeSolutionFolder : ISharpIdeNode, IExpandableSharpIdeNode, IChildSharpIdeNode
@@ -57,13 +59,13 @@ public class SharpIdeSolutionFolder : ISharpIdeNode, IExpandableSharpIdeNode, IC
 	public required IExpandableSharpIdeNode Parent { get; set; }
 
 	[SetsRequiredMembers]
-	internal SharpIdeSolutionFolder(IntermediateSlnFolderModel intermediateModel, HashSet<SharpIdeProjectModel> allProjects, IExpandableSharpIdeNode parent)
+	internal SharpIdeSolutionFolder(IntermediateSlnFolderModel intermediateModel, HashSet<SharpIdeProjectModel> allProjects, HashSet<SharpIdeFile> allFiles, IExpandableSharpIdeNode parent)
 	{
 		Name = intermediateModel.Model.Name;
 		Parent = parent;
-		Files = intermediateModel.Files.Select(s => new SharpIdeFile(s.FullPath, s.Name, this)).ToList();
-		Folders = intermediateModel.Folders.Select(x => new SharpIdeSolutionFolder(x, allProjects, this)).ToList();
-		Projects = intermediateModel.Projects.Select(x => new SharpIdeProjectModel(x, allProjects, this)).ToList();
+		Files = intermediateModel.Files.Select(s => new SharpIdeFile(s.FullPath, s.Name, this, allFiles)).ToList();
+		Folders = intermediateModel.Folders.Select(x => new SharpIdeSolutionFolder(x, allProjects, allFiles, this)).ToList();
+		Projects = intermediateModel.Projects.Select(x => new SharpIdeProjectModel(x, allProjects, allFiles, this)).ToList();
 	}
 }
 public class SharpIdeProjectModel : ISharpIdeNode, IExpandableSharpIdeNode, IChildSharpIdeNode
@@ -79,13 +81,13 @@ public class SharpIdeProjectModel : ISharpIdeNode, IExpandableSharpIdeNode, IChi
 	public required Task<Project> MsBuildEvaluationProjectTask { get; set; }
 
 	[SetsRequiredMembers]
-	internal SharpIdeProjectModel(IntermediateProjectModel projectModel, HashSet<SharpIdeProjectModel> allProjects, IExpandableSharpIdeNode parent)
+	internal SharpIdeProjectModel(IntermediateProjectModel projectModel, HashSet<SharpIdeProjectModel> allProjects, HashSet<SharpIdeFile> allFiles, IExpandableSharpIdeNode parent)
 	{
 		Parent = parent;
 		Name = projectModel.Model.ActualDisplayName;
 		FilePath = projectModel.FullFilePath;
-		Files = TreeMapperV2.GetFiles(projectModel.FullFilePath, this);
-		Folders = TreeMapperV2.GetSubFolders(projectModel.FullFilePath, this);
+		Files = TreeMapperV2.GetFiles(projectModel.FullFilePath, this, allFiles);
+		Folders = TreeMapperV2.GetSubFolders(projectModel.FullFilePath, this, allFiles);
 		MsBuildEvaluationProjectTask = ProjectEvaluation.GetProject(projectModel.FullFilePath);
 		allProjects.Add(this);
 	}

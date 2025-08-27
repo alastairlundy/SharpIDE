@@ -10,10 +10,11 @@ public class SharpIdeFile : ISharpIdeNode, IChildSharpIdeNode
 	public required string Name { get; set; }
 
 	[SetsRequiredMembers]
-	internal SharpIdeFile(string fullPath, string name, IExpandableSharpIdeNode parent)
+	internal SharpIdeFile(string fullPath, string name, IExpandableSharpIdeNode parent, HashSet<SharpIdeFile> allFiles)
 	{
 		Path = fullPath;
 		Name = name;
 		Parent = parent;
+		allFiles.Add(this);
 	}
 }

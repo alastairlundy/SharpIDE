@@ -13,13 +13,13 @@ public class SharpIdeFolder : ISharpIdeNode, IExpandableSharpIdeNode, IChildShar
 	public bool Expanded { get; set; }
 
 	[SetsRequiredMembers]
-	public SharpIdeFolder(DirectoryInfo folderInfo, IExpandableSharpIdeNode parent)
+	public SharpIdeFolder(DirectoryInfo folderInfo, IExpandableSharpIdeNode parent, HashSet<SharpIdeFile> allFiles)
 	{
 		Parent = parent;
 		Path = folderInfo.FullName;
 		Name = folderInfo.Name;
-		Files = folderInfo.GetFiles(this);
-		Folders = this.GetSubFolders(this);
+		Files = folderInfo.GetFiles(this, allFiles);
+		Folders = this.GetSubFolders(this, allFiles);
 	}
 
 	public SharpIdeFolder()

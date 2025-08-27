@@ -14,6 +14,7 @@ using SharpIDE.Application.Features.Analysis;
 using SharpIDE.Application.Features.Debugging;
 using SharpIDE.Application.Features.Events;
 using SharpIDE.Application.Features.SolutionDiscovery;
+using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 using SharpIDE.Godot.Features.Run;
 using Task = System.Threading.Tasks.Task;
 
@@ -28,6 +29,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 	private int _selectionStartCol;
 	private int _selectionEndCol;
 	
+	public SharpIdeSolutionModel? Solution { get; set; }
 	private SharpIdeFile _currentFile = null!;
 	
 	private CustomHighlighter _syntaxHighlighter = new();
@@ -36,6 +38,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 	private ImmutableArray<(FileLinePositionSpan fileSpan, Diagnostic diagnostic)> _diagnostics = [];
 	private ImmutableArray<CodeAction> _currentCodeActionsInPopup = [];
 	private ExecutionStopInfo? _executionStopInfo;
+	private bool _fileChangingSuppressBreakpointToggleEvent;
 	
 	public override void _Ready()
 	{
@@ -55,7 +58,12 @@ public partial class SharpIdeCodeEdit : CodeEdit
 
 	private async Task OnDebuggerExecutionStopped(ExecutionStopInfo executionStopInfo)
 	{
-		if (executionStopInfo.FilePath != _currentFile.Path) return; // TODO: handle file switching
+		Guard.Against.Null(Solution, nameof(Solution));
+		if (executionStopInfo.FilePath != _currentFile.Path)
+		{
+			var file = Solution.AllFiles.Single(s => s.Path == executionStopInfo.FilePath);
+			await this.InvokeAsync(async () => await SetSharpIdeFile(file));
+		}
 		var lineInt = executionStopInfo.Line - 1; // Debugging is 1-indexed, Godot is 0-indexed
 		Guard.Against.Negative(lineInt, nameof(lineInt));
 		_executionStopInfo = executionStopInfo;
@@ -69,6 +77,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 
 	private void OnBreakpointToggled(long line)
 	{
+		if (_fileChangingSuppressBreakpointToggleEvent) return;
 		var lineInt = (int)line;
 		var breakpointAdded = IsLineBreakpointed(lineInt);
 		var lineForDebugger = lineInt + 1; // Godot is 0-indexed, Debugging is 1-indexed
@@ -157,7 +166,9 @@ public partial class SharpIdeCodeEdit : CodeEdit
 	{
 		_currentFile = file;
 		var fileContents = await File.ReadAllTextAsync(_currentFile.Path);
+		_fileChangingSuppressBreakpointToggleEvent = true;
 		SetText(fileContents);
+		_fileChangingSuppressBreakpointToggleEvent = false;
 		var syntaxHighlighting = await RoslynAnalysis.GetDocumentSyntaxHighlighting(_currentFile);
 		SetSyntaxHighlightingModel(syntaxHighlighting);
 		var diagnostics = await RoslynAnalysis.GetDocumentDiagnostics(_currentFile);

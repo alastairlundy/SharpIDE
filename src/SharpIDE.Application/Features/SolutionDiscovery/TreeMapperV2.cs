@@ -10,7 +10,7 @@ public static class TreeMapperV2
 		return folder.Files
 			.Concat(folder.Folders.SelectMany(sub => sub.GetAllFiles()));
 	}
-	public static List<SharpIdeFolder> GetSubFolders(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel)
+	public static List<SharpIdeFolder> GetSubFolders(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel, HashSet<SharpIdeFile> allFiles)
 	{
 		var projectDirectory = Path.GetDirectoryName(csprojectPath)!;
 		var rootFolder = new SharpIdeFolder
@@ -21,12 +21,12 @@ public static class TreeMapperV2
 			Files = [],
 			Folders = []
 		};
-		var subFolders = rootFolder.GetSubFolders(sharpIdeProjectModel);
+		var subFolders = rootFolder.GetSubFolders(sharpIdeProjectModel, allFiles);
 		return subFolders;
 	}
 
 	private static readonly string[] _excludedFolders = ["bin", "obj", "node_modules"];
-	public static List<SharpIdeFolder> GetSubFolders(this SharpIdeFolder folder, IExpandableSharpIdeNode parent)
+	public static List<SharpIdeFolder> GetSubFolders(this SharpIdeFolder folder, IExpandableSharpIdeNode parent, HashSet<SharpIdeFile> allFiles)
 	{
 		var directoryInfo = new DirectoryInfo(folder.Path);
 		ConcurrentBag<SharpIdeFolder> subFolders = [];
@@ -47,20 +47,20 @@ public static class TreeMapperV2
 
 		Parallel.ForEach(subFolderInfos, subFolderInfo =>
 		{
-			var subFolder = new SharpIdeFolder(subFolderInfo, parent);
+			var subFolder = new SharpIdeFolder(subFolderInfo, parent, allFiles);
 			subFolders.Add(subFolder);
 		});
 
 		return subFolders.ToList();
 	}
 
-	public static List<SharpIdeFile> GetFiles(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel)
+	public static List<SharpIdeFile> GetFiles(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel, HashSet<SharpIdeFile> allFiles)
 	{
 		var projectDirectory = Path.GetDirectoryName(csprojectPath)!;
 		var directoryInfo = new DirectoryInfo(projectDirectory);
-		return GetFiles(directoryInfo, sharpIdeProjectModel);
+		return GetFiles(directoryInfo, sharpIdeProjectModel, allFiles);
 	}
-	public static List<SharpIdeFile> GetFiles(this DirectoryInfo directoryInfo, IExpandableSharpIdeNode parent)
+	public static List<SharpIdeFile> GetFiles(this DirectoryInfo directoryInfo, IExpandableSharpIdeNode parent, HashSet<SharpIdeFile> allFiles)
 	{
 		List<FileInfo> fileInfos;
 		try
@@ -72,7 +72,7 @@ public static class TreeMapperV2
 			return [];
 		}
 
-		return fileInfos.Select(f => new SharpIdeFile(f.FullName, f.Name, parent)
+		return fileInfos.Select(f => new SharpIdeFile(f.FullName, f.Name, parent, allFiles)
 		{
 			Path = f.FullName,
 			Name = f.Name,
