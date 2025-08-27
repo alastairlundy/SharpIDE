@@ -56,6 +56,7 @@ public partial class IdeRoot : Control
 
 	private async void OnBuildSlnButtonPressed()
 	{
+		GodotGlobalEvents.InvokeBottomPanelTabSelected(BottomPanelType.Build);
 		await Singletons.BuildService.MsBuildSolutionAsync(_solutionExplorerPanel.SolutionModel.FilePath);
 	}
 
