@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://d4d0umsglu2ex"]
+[gd_scene load_steps=4 format=3 uid="uid://d4d0umsglu2ex"]
 
-[ext_resource type="Script" uid="uid://b6gq81odfn8ok" path="res://Features/Debug_/DebugPanelTab.cs" id="1_yinwn"]
+[ext_resource type="Script" uid="uid://b6gq81odfn8ok" path="res://Features/Debug_/DebugPanelTab/DebugPanelTab.cs" id="1_yinwn"]
+[ext_resource type="PackedScene" uid="uid://bdu08nd7si641" path="res://Features/Debug_/DebugPanelTab/SubTabs/ThreadsVariablesSubTab.tscn" id="2_0jpwf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dx3i6"]
 bg_color = Color(0.129589, 0.120703, 0.112057, 1)
@@ -27,6 +28,9 @@ current_tab = 1
 visible = false
 layout_mode = 2
 metadata/_tab_index = 0
+
+[node name="ThreadsVariablesSubTab" parent="TabContainer/Threads & Variables" instance=ExtResource("2_0jpwf")]
+layout_mode = 1
 
 [node name="Console" type="Control" parent="TabContainer"]
 layout_mode = 2
