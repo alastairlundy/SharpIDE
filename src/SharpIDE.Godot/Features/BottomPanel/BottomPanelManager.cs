@@ -5,6 +5,7 @@ namespace SharpIDE.Godot.Features.BottomPanel;
 public partial class BottomPanelManager : Panel
 {
     private Control _runPanel = null!;
+    private Control _debugPanel = null!;
     private Control _buildPanel = null!;
     private Control _problemsPanel = null!;
 
@@ -13,11 +14,14 @@ public partial class BottomPanelManager : Panel
     public override void _Ready()
     {
         _runPanel = GetNode<Control>("%RunPanel");
+        _debugPanel = GetNode<Control>("%DebugPanel");
         _buildPanel = GetNode<Control>("%BuildPanel");
         _problemsPanel = GetNode<Control>("%ProblemsPanel");
+        
         _panelTypeMap = new Dictionary<BottomPanelType, Control>
         {
             { BottomPanelType.Run, _runPanel },
+            { BottomPanelType.Debug, _debugPanel },
             { BottomPanelType.Build, _buildPanel },
             { BottomPanelType.Problems, _problemsPanel }
         };

@@ -10,6 +10,7 @@ public partial class LeftSideBar : Panel
     private Button _problemsButton = null!;
     private Button _runButton = null!;
     private Button _buildButton = null!;
+    private Button _debugButton = null!;
     
     public override void _Ready()
     {
@@ -17,10 +18,12 @@ public partial class LeftSideBar : Panel
         _problemsButton = GetNode<Button>("%ProblemsButton");
         _runButton = GetNode<Button>("%RunButton");
         _buildButton = GetNode<Button>("%BuildButton");
+        _debugButton = GetNode<Button>("%DebugButton");
         
         _problemsButton.Toggled += toggledOn => GodotGlobalEvents.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Problems : null);
         _runButton.Toggled += toggledOn => GodotGlobalEvents.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Run : null);
         _buildButton.Toggled += toggledOn => GodotGlobalEvents.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Build : null);
+        _debugButton.Toggled += toggledOn => GodotGlobalEvents.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Debug : null);
         GodotGlobalEvents.BottomPanelTabExternallySelected += OnBottomPanelTabExternallySelected;
     }
 
@@ -31,6 +34,7 @@ public partial class LeftSideBar : Panel
             switch (arg)
             {
                 case BottomPanelType.Run: _runButton.ButtonPressed = true; break;
+                case BottomPanelType.Debug: _debugButton.ButtonPressed = true; break;
                 case BottomPanelType.Build: _buildButton.ButtonPressed = true; break;
                 case BottomPanelType.Problems: _problemsButton.ButtonPressed = true; break;
                 default: throw new ArgumentOutOfRangeException(nameof(arg), arg, null);

@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://d4d0umsglu2ex"]
+
+[ext_resource type="Script" uid="uid://b6gq81odfn8ok" path="res://Features/Debug_/DebugPanelTab.cs" id="1_yinwn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dx3i6"]
+bg_color = Color(0.129589, 0.120703, 0.112057, 1)
+
+[node name="DebugPanelTab" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dx3i6")
+script = ExtResource("1_yinwn")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 1
+
+[node name="Threads & Variables" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Console" type="Control" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Terminal" type="Terminal" parent="TabContainer/Console"]
+copy_on_selection = true
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

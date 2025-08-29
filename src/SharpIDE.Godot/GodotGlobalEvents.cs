@@ -17,6 +17,7 @@ public static class GodotGlobalEvents
 public enum BottomPanelType
 {
     Run,
+    Debug,
     Build,
     Problems
 }
