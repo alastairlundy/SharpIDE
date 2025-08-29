@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://d4d0umsglu2ex"]
 
-[ext_resource type="Script" path="res://Features/Debug_/DebugPanelTab/DebugPanelTab.cs" id="1_ppo25"]
-[ext_resource type="PackedScene" path="res://Features/Debug_/DebugPanelTab/SubTabs/ThreadsVariablesSubTab.tscn" id="2_e6ax5"]
+[ext_resource type="Script" uid="uid://b6gq81odfn8ok" path="res://Features/Debug_/Tab/DebugPanelTab.cs" id="1_ppo25"]
+[ext_resource type="PackedScene" uid="uid://bdu08nd7si641" path="res://Features/Debug_/Tab/SubTabs/ThreadsVariablesSubTab.tscn" id="2_e6ax5"]
 
 [node name="DebugPanelTab" type="Control"]
 layout_mode = 3

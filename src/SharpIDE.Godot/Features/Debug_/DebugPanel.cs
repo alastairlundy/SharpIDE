@@ -13,7 +13,7 @@ public partial class DebugPanel : Control
 	[Export]
 	public Texture2D RunningIcon { get; set; } = null!;
 	
-	private PackedScene _debugPanelTabScene = GD.Load<PackedScene>("res://Features/Debug_/DebugPanelTab/DebugPanelTab.tscn");
+	private PackedScene _debugPanelTabScene = GD.Load<PackedScene>("res://Features/Debug_/Tab/DebugPanelTab.tscn");
 	public override void _Ready()
 	{
 		if (RunningIcon is null) throw new Exception("RunningIcon is null in DebugPanel");
