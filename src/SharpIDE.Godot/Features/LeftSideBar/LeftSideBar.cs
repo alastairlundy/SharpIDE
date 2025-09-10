@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using Godot;
 
 namespace SharpIDE.Godot.Features.LeftSideBar;

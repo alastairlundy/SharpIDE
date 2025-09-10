@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using SharpIDE.Application.Features.Evaluation;
 
 namespace SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 

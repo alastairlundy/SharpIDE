@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using GDExtensionBindgen;
 using Godot;
 using SharpIDE.Application.Features.Events;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;

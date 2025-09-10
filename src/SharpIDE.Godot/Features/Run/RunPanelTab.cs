@@ -1,6 +1,3 @@
-using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GDExtensionBindgen;
 using Godot;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;

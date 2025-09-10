@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Godot;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 

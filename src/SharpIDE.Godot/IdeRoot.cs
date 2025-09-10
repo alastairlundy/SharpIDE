@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Godot;
 using Microsoft.Build.Locator;
 using SharpIDE.Application.Features.Analysis;
