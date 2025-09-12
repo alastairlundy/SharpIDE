@@ -153,6 +153,7 @@ item_0/text = "Getting Context Actions..."
 item_0/id = 0
 
 [node name="BottomPanel" type="Panel" parent="VBoxContainer/HBoxContainer/InvertedVSplitContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("7_i62lx")
 

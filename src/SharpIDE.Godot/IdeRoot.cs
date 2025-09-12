@@ -2,6 +2,7 @@ using Godot;
 using Microsoft.Build.Locator;
 using SharpIDE.Application.Features.Analysis;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
+using SharpIDE.Godot.Features.BottomPanel;
 using SharpIDE.Godot.Features.CustomControls;
 using SharpIDE.Godot.Features.Run;
 using SharpIDE.Godot.Features.SolutionExplorer;
@@ -19,6 +20,7 @@ public partial class IdeRoot : Control
 	private RunPanel _runPanel = null!;
 	private Button _runMenuButton = null!;
 	private Popup _runMenuPopup = null!;
+	private BottomPanelManager _bottomPanelManager = null!;
 	
 	private readonly PackedScene _runMenuItemScene = ResourceLoader.Load<PackedScene>("res://Features/Run/RunMenuItem.tscn");
 	public override void _Ready()
@@ -34,6 +36,7 @@ public partial class IdeRoot : Control
 		_solutionExplorerPanel = GetNode<SolutionExplorerPanel>("%SolutionExplorerPanel");
 		_runPanel = GetNode<RunPanel>("%RunPanel");
 		_invertedVSplitContainer = GetNode<InvertedVSplitContainer>("%InvertedVSplitContainer");
+		_bottomPanelManager = GetNode<BottomPanelManager>("%BottomPanel");
 		
 		_runMenuButton.Pressed += OnRunMenuButtonPressed;
 		_solutionExplorerPanel.FileSelected += OnSolutionExplorerPanelOnFileSelected;
@@ -71,6 +74,7 @@ public partial class IdeRoot : Control
 			var solutionModel = await VsPersistenceMapper.GetSolutionModel(path);
 			_solutionExplorerPanel.SolutionModel = solutionModel;
 			_sharpIdeCodeEdit.Solution = solutionModel;
+			_bottomPanelManager.Solution = solutionModel;
 			Callable.From(_solutionExplorerPanel.RepopulateTree).CallDeferred();
 			RoslynAnalysis.StartSolutionAnalysis(path);
 				
