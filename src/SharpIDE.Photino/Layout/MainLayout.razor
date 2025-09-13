@@ -51,11 +51,12 @@
 		<MudStack Style="height: 100%; overflow: hidden" Row="true" Spacing="0" StretchItems="StretchItems.Middle">
 			<MudPaper Elevation="6" Height="100%" Style="background-color: var(--mud-palette-appbar-background); z-index: 1200;">
 				<MudStack AlignItems="AlignItems.Center" Spacing="1" Style="padding: 4px; height: 100%">
-					<SidebarIconButton Icon="@Icons.Material.Filled.FolderOpen" Text="Explorer" OnClick="@DrawerToggle" Selected="@_drawerOpen" />
+					<SidebarIconButton Icon="@Icons.Material.Outlined.FolderOpen" Text="Explorer" OnClick="@DrawerToggle" Selected="@_drawerOpen" />
 					<MudSpacer />
-					<SidebarIconButton Icon="@Icons.Material.Filled.ReportProblem" Text="Problems" OnClick="@ClickProblemsPanel" Selected="@(_selectedBottomPanel is BottomPanelType.Problems)" />
-					<SidebarIconButton Icon="@Icons.Material.Filled.PlayArrow" Text="Run" OnClick="@ClickRunPanel" Selected="@(_selectedBottomPanel is BottomPanelType.Run)" />
-					<SidebarIconButton Icon="@Icons.Material.Filled.Terminal" Text="Build" OnClick="@ClickBuildPanel" Selected="@(_selectedBottomPanel is BottomPanelType.Build)" />
+					<SidebarIconButton Icon="@Icons.Material.Outlined.ErrorOutline" Text="Problems" OnClick="@ClickProblemsPanel" Selected="@(_selectedBottomPanel is BottomPanelType.Problems)" />
+					<SidebarIconButton Icon="@Icons.Material.Outlined.PlayArrow" Text="Run" OnClick="@ClickRunPanel" Selected="@(_selectedBottomPanel is BottomPanelType.Run)" />
+					<SidebarIconButton Icon="@Icons.Material.Outlined.BugReport" Text="Debug" Selected="false"/>
+					<SidebarIconButton Icon="@Icons.Material.Outlined.Terminal" Text="Build" OnClick="@ClickBuildPanel" Selected="@(_selectedBottomPanel is BottomPanelType.Build)" />
 				</MudStack>
 			</MudPaper>
 			<div>
