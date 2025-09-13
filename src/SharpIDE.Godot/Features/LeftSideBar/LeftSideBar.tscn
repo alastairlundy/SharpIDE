@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://biyhfwx36ium8"]
+[gd_scene load_steps=8 format=3 uid="uid://biyhfwx36ium8"]
 
 [ext_resource type="Texture2D" uid="uid://bkty6563cthj8" path="res://Features/Run/Resources/Run.svg" id="1_6wc7d"]
 [ext_resource type="Script" uid="uid://bddno1bbvvp5q" path="res://Features/LeftSideBar/LeftSideBar.cs" id="1_rgaf0"]
 [ext_resource type="ButtonGroup" uid="uid://c2nmo2x3va0gi" path="res://Features/LeftSideBar/LeftBottomSidebarButtonGroup.tres" id="2_1aad6"]
+[ext_resource type="Texture2D" uid="uid://xc8srvqwlwng" path="res://Features/SolutionExplorer/Resources/FolderIcon.svg" id="2_y0trk"]
 [ext_resource type="Texture2D" uid="uid://c7cmou8hipsvc" path="res://Features/Run/Resources/Debug.svg" id="4_gyh3f"]
+[ext_resource type="Texture2D" uid="uid://rvuk8jybyu6m" path="res://Features/Problems/Resources/Error.svg" id="4_jg03n"]
+[ext_resource type="Texture2D" uid="uid://b0170ypw8uf3a" path="res://Features/LeftSideBar/Resources/Terminal.svg" id="6_ddh6f"]
 
 [node name="LeftSideBar" type="Panel"]
 custom_minimum_size = Vector2(80, 0)
@@ -36,7 +39,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 13
 toggle_mode = true
 text = "Explorer"
-icon = ExtResource("1_6wc7d")
+icon = ExtResource("2_y0trk")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
@@ -53,7 +56,7 @@ theme_override_font_sizes/font_size = 13
 toggle_mode = true
 button_group = ExtResource("2_1aad6")
 text = "Problems"
-icon = ExtResource("1_6wc7d")
+icon = ExtResource("4_jg03n")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
@@ -92,7 +95,7 @@ theme_override_font_sizes/font_size = 13
 toggle_mode = true
 button_group = ExtResource("2_1aad6")
 text = "Build"
-icon = ExtResource("1_6wc7d")
+icon = ExtResource("6_ddh6f")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
