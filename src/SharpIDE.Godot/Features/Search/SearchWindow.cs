@@ -16,8 +16,17 @@ public partial class SearchWindow : PopupPanel
     public override void _Ready()
     {
         _lineEdit = GetNode<LineEdit>("%SearchLineEdit");
+        _lineEdit.Text = "";
         _searchResultsContainer = GetNode<VBoxContainer>("%SearchResultsVBoxContainer");
+        _searchResultsContainer.GetChildren().ToList().ForEach(s => s.QueueFree());
         _lineEdit.TextChanged += OnTextChanged;
+        AboutToPopup += OnAboutToPopup;
+    }
+
+    private void OnAboutToPopup()
+    {
+        _lineEdit.SelectAll();
+        Callable.From(_lineEdit.GrabFocus).CallDeferred();
     }
 
     private async void OnTextChanged(string newText)
