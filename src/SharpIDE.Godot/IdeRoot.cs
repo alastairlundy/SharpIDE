@@ -47,7 +47,7 @@ public partial class IdeRoot : Control
 		_runMenuButton.Pressed += OnRunMenuButtonPressed;
 		GodotGlobalEvents.FileSelected += OnSolutionExplorerPanelOnFileSelected;
 		_fileDialog.FileSelected += SetSlnFilePath;
-		_openSlnButton.Pressed += IdeWindow.PickSolution;
+		_openSlnButton.Pressed += () => IdeWindow.PickSolution();
 		_buildSlnButton.Pressed += OnBuildSlnButtonPressed;
 		GodotGlobalEvents.BottomPanelVisibilityChangeRequested += async show => await this.InvokeAsync(() => _invertedVSplitContainer.InvertedSetCollapsed(!show));
 		_nodeReadyTcs.SetResult();

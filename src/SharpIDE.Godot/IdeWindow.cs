@@ -23,14 +23,29 @@ public partial class IdeWindow : Control
         GodotServiceDefaults.AddServiceDefaults();
         //GetWindow().SetMinSize(new Vector2I(1152, 648));
         
-        PickSolution();
+        PickSolution(true);
     }
-
-    public void PickSolution()
+    
+    public void PickSolution(bool fullscreen = false)
     {
         if (_slnPicker is not null) throw new InvalidOperationException("Solution picker is already active");
         _slnPicker = _solutionPickerScene.Instantiate<SlnPicker>();
-        AddChild(_slnPicker);
+        if (fullscreen)
+        {
+            AddChild(_slnPicker);
+        }
+        else
+        {
+            var window = GetNode<Window>("Window");
+            window.Title = "Open Solution";
+            window.AddChild(_slnPicker);
+            window.Popup();
+            window.CloseRequested += () =>
+            {
+                window.Hide();
+                //window.QueueFreeChildren();
+            };
+        }
         _ = Task.GodotRun(async () =>
         {
             var slnPathTask = _slnPicker.GetSelectedSolutionPath();
@@ -48,7 +63,7 @@ public partial class IdeWindow : Control
             
             await this.InvokeAsync(() =>
             {
-                RemoveChild(_slnPicker);
+                _slnPicker.GetParent().RemoveChild(_slnPicker);
                 _slnPicker.QueueFree();
                 _slnPicker = null;
                 if (_ideRoot is not null)

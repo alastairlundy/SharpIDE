@@ -14,9 +14,21 @@ public partial class SlnPicker : Control
         _fileDialog = GetNode<FileDialog>("%FileDialog");
         _openSlnButton = GetNode<Button>("%OpenSlnButton");
         _openSlnButton.Pressed += () => _fileDialog.PopupCentered();
-        _fileDialog.FileSelected += path => _tcs.SetResult(path);
+        var windowParent = GetParentOrNull<Window>();
+        _fileDialog.FileSelected += path =>
+        {
+            _tcs.SetResult(path);
+            windowParent?.Hide();
+        };
         _fileDialog.Canceled += () => _tcs.SetResult(null);
+        windowParent?.CloseRequested += OnCloseRequested;
     }
+
+    private void OnCloseRequested()
+    {
+        _tcs.SetResult(null);
+    }
+
     public async Task<string?> GetSelectedSolutionPath()
     {
         return await _tcs.Task;

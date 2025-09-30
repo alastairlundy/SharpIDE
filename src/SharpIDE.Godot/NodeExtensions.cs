@@ -36,7 +36,7 @@ public static class NodeExtensions
 {
     extension(Node node)
     {
-        public void ClearChildren()
+        public void QueueFreeChildren()
         {
             foreach (var child in node.GetChildren())
             {

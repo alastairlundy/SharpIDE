@@ -10,3 +10,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_3do1e")
+
+[node name="Window" type="Window" parent="."]
+oversampling_override = 1.0
+title = "Open Solution"
+initial_position = 2
+visible = false
+wrap_controls = true
+popup_window = true
