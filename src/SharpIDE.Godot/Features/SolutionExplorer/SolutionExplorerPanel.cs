@@ -3,6 +3,7 @@ using Godot;
 using SharpIDE.Application.Features.Analysis;
 using SharpIDE.Application.Features.SolutionDiscovery;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
+using SharpIDE.Godot.Features.Problems;
 
 namespace SharpIDE.Godot.Features.SolutionExplorer;
 
@@ -32,9 +33,9 @@ public partial class SolutionExplorerPanel : MarginContainer
 	{
 		var selected = _tree.GetSelected();
 		if (selected is null) return;
-		var sharpIdeFileContainer = selected.GetMetadata(0).As<SharpIdeFileGodotContainer?>();
+		var sharpIdeFileContainer = selected.GetMetadata(0).As<RefCountedContainer<SharpIdeFile>?>();
 		if (sharpIdeFileContainer is null) return;
-		var sharpIdeFile = sharpIdeFileContainer.File;
+		var sharpIdeFile = sharpIdeFileContainer.Item;
 		Guard.Against.Null(sharpIdeFile, nameof(sharpIdeFile));
 		GodotGlobalEvents.Instance.InvokeFileSelected(sharpIdeFile);
 	}
@@ -60,7 +61,7 @@ public partial class SolutionExplorerPanel : MarginContainer
 	private static TreeItem? FindItemRecursive(TreeItem item, SharpIdeFile file)
 	{
 		var metadata = item.GetMetadata(0);
-		if (metadata.As<SharpIdeFileGodotContainer?>()?.File == file)
+		if (metadata.As<RefCountedContainer<SharpIdeFile>?>()?.Item == file)
 			return item;
 
 		var child = item.GetFirstChild();
@@ -160,7 +161,7 @@ public partial class SolutionExplorerPanel : MarginContainer
 		var fileItem = _tree.CreateItem(parent);
 		fileItem.SetText(0, file.Name);
 		fileItem.SetIcon(0, CsharpFileIcon);
-		var container = new SharpIdeFileGodotContainer { File = file };
+		var container = new RefCountedContainer<SharpIdeFile>(file);
 		fileItem.SetMetadata(0, container);
 	}
 }

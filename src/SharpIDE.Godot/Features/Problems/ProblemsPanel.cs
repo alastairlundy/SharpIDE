@@ -64,7 +64,7 @@ public partial class ProblemsPanel : Control
             var treeItem = tree.CreateItem(parent);
             treeItem.SetText(0, e.NewItem.Value.Name);
             treeItem.SetIcon(0, CsprojIcon);
-            treeItem.SetMetadata(0, new ProjectContainer(e.NewItem.Value));
+            treeItem.SetMetadata(0, new RefCountedContainer<SharpIdeProjectModel>(e.NewItem.Value));
             e.NewItem.View.Value = treeItem;
             
             Observable.EveryValueChanged(e.NewItem.Value, s => s.Diagnostics.Count).Subscribe(s => treeItem.Visible = s is not 0).AddTo(this);
@@ -86,7 +86,7 @@ public partial class ProblemsPanel : Control
         {
             var diagItem = tree.CreateItem(parent);
             diagItem.SetText(0, e.NewItem.Value.GetMessage());
-            diagItem.SetMetadata(0, new DiagnosticMetadataContainer(e.NewItem.Value));
+            diagItem.SetMetadata(0, new RefCountedContainer<Diagnostic>(e.NewItem.Value));
             diagItem.SetIcon(0, e.NewItem.Value.Severity switch
             {
                 DiagnosticSeverity.Error => ErrorIcon,
@@ -108,13 +108,13 @@ public partial class ProblemsPanel : Control
     private void TreeOnItemActivated()
     {
         var selected = _tree.GetSelected();
-        var diagnosticContainer = selected.GetMetadata(0).As<DiagnosticMetadataContainer?>();
+        var diagnosticContainer = selected.GetMetadata(0).As<RefCountedContainer<Diagnostic>?>();
         if (diagnosticContainer is null) return;
-        var diagnostic = diagnosticContainer.Diagnostic;
+        var diagnostic = diagnosticContainer.Item;
         var parentTreeItem = selected.GetParent();
-        var projectContainer = parentTreeItem.GetMetadata(0).As<ProjectContainer?>();
+        var projectContainer = parentTreeItem.GetMetadata(0).As<RefCountedContainer<SharpIdeProjectModel>?>();
         if (projectContainer is null) return;
-        var projectModel = projectContainer.Project;
+        var projectModel = projectContainer.Item;
         OpenDocumentContainingDiagnostic(diagnostic, projectModel);
     }
     
