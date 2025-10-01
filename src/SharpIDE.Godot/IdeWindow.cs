@@ -11,19 +11,22 @@ namespace SharpIDE.Godot;
 /// </summary>
 public partial class IdeWindow : Control
 {
-    private readonly PackedScene _solutionPickerScene = ResourceLoader.Load<PackedScene>("res://Features/SlnPicker/SlnPicker.tscn");
-    private readonly PackedScene _ideRootScene = ResourceLoader.Load<PackedScene>("res://IdeRoot.tscn");
+    private const string SlnPickerScenePath = "res://Features/SlnPicker/SlnPicker.tscn";
+    private const string IdeRootScenePath = "res://IdeRoot.tscn";
+    private PackedScene? _solutionPickerScene;
+    private PackedScene? _ideRootScene;
 
     private IdeRoot? _ideRoot;
     private SlnPicker? _slnPicker;
 
     public override void _Ready()
     {
+        ResourceLoader.LoadThreadedRequest(SlnPickerScenePath);
+        ResourceLoader.LoadThreadedRequest(IdeRootScenePath);
         MSBuildLocator.RegisterDefaults();
         GodotServiceDefaults.AddServiceDefaults();
         //GetWindow().SetMinSize(new Vector2I(1152, 648));
-        
-        PickSolution(true);
+        Callable.From(() => PickSolution(true)).CallDeferred();
     }
     
     // public override void _ExitTree()
@@ -39,6 +42,7 @@ public partial class IdeWindow : Control
     public void PickSolution(bool fullscreen = false)
     {
         if (_slnPicker is not null) throw new InvalidOperationException("Solution picker is already active");
+        _solutionPickerScene ??= (PackedScene)ResourceLoader.LoadThreadedGet(SlnPickerScenePath);
         _slnPicker = _solutionPickerScene.Instantiate<SlnPicker>();
         if (fullscreen)
         {
@@ -60,6 +64,7 @@ public partial class IdeWindow : Control
         _ = Task.GodotRun(async () =>
         {
             var slnPathTask = _slnPicker.GetSelectedSolutionPath();
+            _ideRootScene ??= (PackedScene)ResourceLoader.LoadThreadedGet(IdeRootScenePath);
             var ideRoot = _ideRootScene.Instantiate<IdeRoot>();
             ideRoot.IdeWindow = this;
             var slnPath = await slnPathTask;
