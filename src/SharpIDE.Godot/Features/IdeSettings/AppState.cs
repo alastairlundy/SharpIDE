@@ -4,7 +4,7 @@ public class AppState
 {
     public string? LastOpenSolutionFilePath { get; set; }
     public IdeSettings IdeSettings { get; set; } = new IdeSettings();
-    public HashSet<PreviouslyOpenedSln> PreviouslyOpenedSolutions { get; set; } = [];
+    public HashSet<RecentSln> RecentSlns { get; set; } = [];
 }
 
 public class IdeSettings
@@ -12,7 +12,7 @@ public class IdeSettings
     public bool AutoOpenLastSolution { get; set; }
 }
 
-public record PreviouslyOpenedSln
+public record RecentSln
 {
     public required string Name { get; set; }
     public required string FilePath { get; set; }

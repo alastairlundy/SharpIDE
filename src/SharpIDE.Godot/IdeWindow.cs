@@ -79,7 +79,7 @@ public partial class IdeWindow : Control
                 return;
             }
             ideRoot.SetSlnFilePath(slnPath);
-            Singletons.AppState.PreviouslyOpenedSolutions.Add(new PreviouslyOpenedSln { FilePath = slnPath, Name = Path.GetFileName(slnPath) });
+            Singletons.AppState.RecentSlns.Add(new RecentSln { FilePath = slnPath, Name = Path.GetFileName(slnPath) });
             
             await this.InvokeAsync(() =>
             {

@@ -9,16 +9,16 @@ public partial class PreviousSlnEntry : HBoxContainer
     private Label _slnNameLabel = null!;
     private Panel _slnColourPanel = null!;
     
-    public PreviouslyOpenedSln PreviouslyOpenedSln { get; set; } = null!;
+    public RecentSln RecentSln { get; set; } = null!;
 
     public override void _Ready()
     {
-        if (PreviouslyOpenedSln is null) return;
+        if (RecentSln is null) return;
         _slnNameLabel = GetNode<Label>("%SlnNameLabel");
         _slnPathLabel = GetNode<Label>("%SlnPathLabel");
         _slnColourPanel = GetNode<Panel>("Panel");
-        _slnNameLabel.Text = PreviouslyOpenedSln.Name;
-        _slnPathLabel.Text = PreviouslyOpenedSln.FilePath;
-        _slnColourPanel.Modulate = RandomRecentSlnColours.GetColourForFilePath(PreviouslyOpenedSln.FilePath);
+        _slnNameLabel.Text = RecentSln.Name;
+        _slnPathLabel.Text = RecentSln.FilePath;
+        _slnColourPanel.Modulate = RandomRecentSlnColours.GetColourForFilePath(RecentSln.FilePath);
     }
 }

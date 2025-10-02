@@ -33,10 +33,10 @@ public partial class SlnPicker : Control
     private void PopulatePreviousSolutions()
     {
         _previousSlnsVBoxContainer.QueueFreeChildren();
-        foreach (var previousSln in Singletons.AppState.PreviouslyOpenedSolutions.Reverse())
+        foreach (var previousSln in Singletons.AppState.RecentSlns.Reverse())
         {
             var node = _previousSlnEntryScene.Instantiate<PreviousSlnEntry>();
-            node.PreviouslyOpenedSln = previousSln;
+            node.RecentSln = previousSln;
             _previousSlnsVBoxContainer.AddChild(node);
         }
     }
