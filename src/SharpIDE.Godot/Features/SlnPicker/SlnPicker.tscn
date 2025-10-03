@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cwvhbsd1mdl2x"]
+[gd_scene load_steps=6 format=3 uid="uid://cwvhbsd1mdl2x"]
 
 [ext_resource type="Script" uid="uid://bjvwb6jg6jpsi" path="res://Features/SlnPicker/SlnPicker.cs" id="1_ciq0g"]
 [ext_resource type="Texture2D" uid="uid://tpjfx7mo6cwj" path="res://Resources/SharpIdeV3.svg" id="2_qs47j"]
 [ext_resource type="PackedScene" uid="uid://x5lhwvh5dium" path="res://Features/SlnPicker/PreviousSlnEntry.tscn" id="2_t7l5q"]
 [ext_resource type="Script" uid="uid://but0p7xwpfxtg" path="res://Features/SlnPicker/AutoOpenLastSlnButton.cs" id="4_qs47j"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_qs47j"]
 
 [node name="SlnPicker" type="Control"]
 layout_mode = 3
@@ -21,40 +23,49 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 4
+theme_override_icons/grabber = SubResource("PlaceholderTexture2D_qs47j")
 split_offset = 245
 dragging_enabled = false
-dragger_visibility = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer"]
+[node name="Panel2" type="Panel" parent="VSplitContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
+
+[node name="MarginContainer" type="MarginContainer" parent="VSplitContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/Panel2/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VSplitContainer/Panel2/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TextureRect" type="TextureRect" parent="VSplitContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="VSplitContainer/Panel2/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 texture = ExtResource("2_qs47j")
 expand_mode = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VSplitContainer/Panel2/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="Label" type="Label" parent="VSplitContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="VSplitContainer/Panel2/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "SharpIDE"
 
-[node name="Label2" type="Label" parent="VSplitContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Label2" type="Label" parent="VSplitContainer/Panel2/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5689727, 0.56897277, 0.5689727, 1)
 text = "v1.0.0"
