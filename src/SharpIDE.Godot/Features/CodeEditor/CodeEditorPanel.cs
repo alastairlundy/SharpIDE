@@ -39,7 +39,7 @@ public partial class CodeEditorPanel : MarginContainer
     private void OnTabClicked(long tab)
     {
         var sharpIdeFile = _tabContainer.GetChild<SharpIdeCodeEdit>((int)tab).SharpIdeFile;
-        GodotGlobalEvents.Instance.InvokeFileExternallySelected(sharpIdeFile);
+        GodotGlobalEvents.Instance.FileExternallySelected.InvokeParallelFireAndForget(sharpIdeFile, null);
     }
 
     private void OnTabClosePressed(long tabIndex)
@@ -87,7 +87,7 @@ public partial class CodeEditorPanel : MarginContainer
         if (executionStopInfo.FilePath != currentSharpIdeFile?.Path)
         {
             var file = Solution.AllFiles.Single(s => s.Path == executionStopInfo.FilePath);
-            await GodotGlobalEvents.Instance.InvokeFileExternallySelectedAndWait(file).ConfigureAwait(false);
+            await GodotGlobalEvents.Instance.FileExternallySelected.InvokeParallelAsync(file, null).ConfigureAwait(false);
         }
         var lineInt = executionStopInfo.Line - 1; // Debugging is 1-indexed, Godot is 0-indexed
         Guard.Against.Negative(lineInt, nameof(lineInt));

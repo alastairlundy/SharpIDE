@@ -26,7 +26,7 @@ public partial class SolutionExplorerPanel : MarginContainer
 	{
 		_tree = GetNode<Tree>("Tree");
 		_tree.ItemMouseSelected += TreeOnItemMouseSelected;
-		GodotGlobalEvents.Instance.FileExternallySelected += OnFileExternallySelected;
+		GodotGlobalEvents.Instance.FileExternallySelected.Subscribe(OnFileExternallySelected);
 	}
 
 	private void TreeOnItemMouseSelected(Vector2 mousePosition, long mouseButtonIndex)
@@ -37,13 +37,13 @@ public partial class SolutionExplorerPanel : MarginContainer
 		if (sharpIdeFileContainer is null) return;
 		var sharpIdeFile = sharpIdeFileContainer.Item;
 		Guard.Against.Null(sharpIdeFile, nameof(sharpIdeFile));
-		GodotGlobalEvents.Instance.InvokeFileSelected(sharpIdeFile);
+		GodotGlobalEvents.Instance.FileSelected.InvokeParallelFireAndForget(sharpIdeFile, null);
 	}
 	
 	private async Task OnFileExternallySelected(SharpIdeFile file, SharpIdeFileLinePosition? fileLinePosition)
 	{
 		await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
-		var task = GodotGlobalEvents.Instance.InvokeFileSelectedAndWait(file, fileLinePosition);
+		var task = GodotGlobalEvents.Instance.FileSelected.InvokeParallelAsync(file, fileLinePosition);
 		var item = FindItemRecursive(_tree.GetRoot(), file);
 		if (item is not null)
 		{

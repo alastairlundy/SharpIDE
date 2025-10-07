@@ -27,7 +27,7 @@ public partial class SearchResultComponent : MarginContainer
     private void OnButtonPressed()
     {
         var fileLinePosition = new SharpIdeFileLinePosition { Line = Result.Line, Column = Result.StartColumn };
-        GodotGlobalEvents.Instance.InvokeFileExternallySelected(Result.File, fileLinePosition);
+        GodotGlobalEvents.Instance.FileExternallySelected.InvokeParallelFireAndForget(Result.File, fileLinePosition);
         ParentSearchWindow.Hide();
     }
 

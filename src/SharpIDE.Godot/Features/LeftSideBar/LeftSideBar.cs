@@ -1,4 +1,5 @@
 using Godot;
+using SharpIDE.Godot.Features.BottomPanel;
 
 namespace SharpIDE.Godot.Features.LeftSideBar;
 
@@ -21,12 +22,12 @@ public partial class LeftSideBar : Panel
         _debugButton = GetNode<Button>("%DebugButton");
         _ideDiagnosticsButton = GetNode<Button>("%IdeDiagnosticsButton");
         
-        _problemsButton.Toggled += toggledOn => GodotGlobalEvents.Instance.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Problems : null);
-        _runButton.Toggled += toggledOn => GodotGlobalEvents.Instance.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Run : null);
-        _buildButton.Toggled += toggledOn => GodotGlobalEvents.Instance.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Build : null);
-        _debugButton.Toggled += toggledOn => GodotGlobalEvents.Instance.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.Debug : null);
-        _ideDiagnosticsButton.Toggled += toggledOn => GodotGlobalEvents.Instance.InvokeBottomPanelTabSelected(toggledOn ? BottomPanelType.IdeDiagnostics : null);
-        GodotGlobalEvents.Instance.BottomPanelTabExternallySelected += OnBottomPanelTabExternallySelected;
+        _problemsButton.Toggled += toggledOn => GodotGlobalEvents.Instance.BottomPanelTabSelected.InvokeParallelFireAndForget(toggledOn ? BottomPanelType.Problems : null);
+        _runButton.Toggled += toggledOn => GodotGlobalEvents.Instance.BottomPanelTabSelected.InvokeParallelFireAndForget(toggledOn ? BottomPanelType.Run : null);
+        _buildButton.Toggled += toggledOn => GodotGlobalEvents.Instance.BottomPanelTabSelected.InvokeParallelFireAndForget(toggledOn ? BottomPanelType.Build : null);
+        _debugButton.Toggled += toggledOn => GodotGlobalEvents.Instance.BottomPanelTabSelected.InvokeParallelFireAndForget(toggledOn ? BottomPanelType.Debug : null);
+        _ideDiagnosticsButton.Toggled += toggledOn => GodotGlobalEvents.Instance.BottomPanelTabSelected.InvokeParallelFireAndForget(toggledOn ? BottomPanelType.IdeDiagnostics : null);
+        GodotGlobalEvents.Instance.BottomPanelTabExternallySelected.Subscribe(OnBottomPanelTabExternallySelected);
     }
 
     private async Task OnBottomPanelTabExternallySelected(BottomPanelType arg)

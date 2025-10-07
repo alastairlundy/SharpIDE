@@ -58,13 +58,13 @@ public partial class IdeRoot : Control
 		_bottomPanelManager = GetNode<BottomPanelManager>("%BottomPanel");
 		
 		_runMenuButton.Pressed += OnRunMenuButtonPressed;
-		GodotGlobalEvents.Instance.FileSelected += OnSolutionExplorerPanelOnFileSelected;
+		GodotGlobalEvents.Instance.FileSelected.Subscribe(OnSolutionExplorerPanelOnFileSelected);
 		_openSlnButton.Pressed += () => IdeWindow.PickSolution();
 		_buildSlnButton.Pressed += OnBuildSlnButtonPressed;
 		_rebuildSlnButton.Pressed += OnRebuildSlnButtonPressed;
 		_cleanSlnButton.Pressed += OnCleanSlnButtonPressed;
 		_restoreSlnButton.Pressed += OnRestoreSlnButtonPressed;
-		GodotGlobalEvents.Instance.BottomPanelVisibilityChangeRequested += async show => await this.InvokeAsync(() => _invertedVSplitContainer.InvertedSetCollapsed(!show));
+		GodotGlobalEvents.Instance.BottomPanelVisibilityChangeRequested.Subscribe(async show => await this.InvokeAsync(() => _invertedVSplitContainer.InvertedSetCollapsed(!show)));
 		_nodeReadyTcs.SetResult();
 	}
 
@@ -78,22 +78,22 @@ public partial class IdeRoot : Control
 
 	private async void OnBuildSlnButtonPressed()
 	{
-		GodotGlobalEvents.Instance.InvokeBottomPanelTabExternallySelected(BottomPanelType.Build);
+		GodotGlobalEvents.Instance.BottomPanelTabExternallySelected.InvokeParallelFireAndForget(BottomPanelType.Build);
 		await Singletons.BuildService.MsBuildSolutionAsync(_solutionExplorerPanel.SolutionModel.FilePath);
 	}
 	private async void OnRebuildSlnButtonPressed()
 	{
-		GodotGlobalEvents.Instance.InvokeBottomPanelTabExternallySelected(BottomPanelType.Build);
+		GodotGlobalEvents.Instance.BottomPanelTabExternallySelected.InvokeParallelFireAndForget(BottomPanelType.Build);
 		await Singletons.BuildService.MsBuildSolutionAsync(_solutionExplorerPanel.SolutionModel.FilePath, BuildType.Rebuild);
 	}
 	private async void OnCleanSlnButtonPressed()
 	{
-		GodotGlobalEvents.Instance.InvokeBottomPanelTabExternallySelected(BottomPanelType.Build);
+		GodotGlobalEvents.Instance.BottomPanelTabExternallySelected.InvokeParallelFireAndForget(BottomPanelType.Build);
 		await Singletons.BuildService.MsBuildSolutionAsync(_solutionExplorerPanel.SolutionModel.FilePath, BuildType.Clean);
 	}
 	private async void OnRestoreSlnButtonPressed()
 	{
-		GodotGlobalEvents.Instance.InvokeBottomPanelTabExternallySelected(BottomPanelType.Build);
+		GodotGlobalEvents.Instance.BottomPanelTabExternallySelected.InvokeParallelFireAndForget(BottomPanelType.Build);
 		await Singletons.BuildService.MsBuildSolutionAsync(_solutionExplorerPanel.SolutionModel.FilePath, BuildType.Restore);
 	}
 
@@ -115,10 +115,11 @@ public partial class IdeRoot : Control
 			_searchWindow.Solution = solutionModel;
 			Callable.From(_solutionExplorerPanel.RepopulateTree).CallDeferred();
 			RoslynAnalysis.StartSolutionAnalysis(solutionModel);
+			Singletons.FileWatcher.StartWatching(solutionModel);
 			
 			var infraProject = solutionModel.AllProjects.SingleOrDefault(s => s.Name == "WebUi");
 			var diFile = infraProject?.Folders.Single(s => s.Name == "Pages").Files.Single(s => s.Name == "TestPage.razor");
-			if (diFile != null) await this.InvokeDeferredAsync(() => GodotGlobalEvents.Instance.InvokeFileExternallySelected(diFile));
+			if (diFile != null) await this.InvokeDeferredAsync(() => GodotGlobalEvents.Instance.FileExternallySelected.InvokeParallelFireAndForget(diFile, null));
 				
 			var tasks = solutionModel.AllProjects.Select(p => p.MsBuildEvaluationProjectTask).ToList();
 			await Task.WhenAll(tasks).ConfigureAwait(false);
