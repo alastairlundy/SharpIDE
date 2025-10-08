@@ -27,6 +27,7 @@ public partial class IdeWindow : Control
         MSBuildLocator.RegisterDefaults();
         GodotServiceDefaults.AddServiceDefaults();
         Singletons.AppState = AppStateLoader.LoadAppStateFromConfigFile();
+        GetWindow().FocusExited += OnFocusExited;
         //GetWindow().SetMinSize(new Vector2I(1152, 648));
         Callable.From(() => PickSolution(true)).CallDeferred();
     }
@@ -40,6 +41,11 @@ public partial class IdeWindow : Control
         // GC.WaitForPendingFinalizers();
         // GC.Collect();
         // PrintOrphanNodes();
+    }
+    
+    private void OnFocusExited()
+    {
+        _ = Task.GodotRun(async () => await Singletons.FileManager.SaveAllOpenFilesAsync());
     }
     
     public void PickSolution(bool fullscreen = false)
