@@ -123,6 +123,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 		_ = Task.GodotRun(async () =>
 		{
 			var affectedFiles = await RoslynAnalysis.ApplyCodeActionAsync(codeAction);
+			// TODO: This can be more efficient - we can just update in memory and proceed with highlighting etc. Save to disk in background.
 			foreach (var (affectedFile, updatedText) in affectedFiles)
 			{
 				await Singletons.FileManager.UpdateInMemoryIfOpenAndSaveAsync(affectedFile, updatedText);
