@@ -1,0 +1,47 @@
+﻿using Godot;
+using Microsoft.CodeAnalysis;
+
+namespace SharpIDE.Godot.Features.CodeEditor;
+
+public static partial class SymbolInfoComponents
+{
+    public static Control GetLocalVariableSymbolInfo(ILocalSymbol symbol)
+    {
+        var label = new RichTextLabel();
+        label.FitContent = true;
+        label.AutowrapMode = TextServer.AutowrapMode.Off;
+        label.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        label.PushColor(CachedColors.White);
+        label.PushFont(MonospaceFont);
+        label.AddAttributes(symbol);
+        label.AddText("local variable ");
+        label.AddAccessibilityModifier(symbol);
+        label.AddStaticModifier(symbol);
+        label.AddVirtualModifier(symbol);
+        label.AddAbstractModifier(symbol);
+        label.AddOverrideModifier(symbol);
+        label.AddLocalVariableTypeName(symbol);
+        label.AddLocalVariableName(symbol);
+        label.Newline();
+        label.Pop(); // font
+        label.AddDocs(symbol);
+        
+        label.Pop();
+        return label;
+    }
+    
+    private static void AddLocalVariableTypeName(this RichTextLabel label, ILocalSymbol symbol)
+    {
+        label.PushColor(GetSymbolColourByType(symbol.Type));
+        label.AddText(symbol.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat));
+        label.Pop();
+        label.AddText(" ");
+    }
+    
+    private static void AddLocalVariableName(this RichTextLabel label, ILocalSymbol symbol)
+    {
+        label.PushColor(CachedColors.White);
+        label.AddText(symbol.Name);
+        label.Pop();
+    }
+}

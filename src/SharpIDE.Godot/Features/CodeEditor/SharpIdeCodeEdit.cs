@@ -131,7 +131,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 			IPropertySymbol propertySymbol => SymbolInfoComponents.GetPropertySymbolInfo(propertySymbol),
 			IFieldSymbol fieldSymbol => SymbolInfoComponents.GetFieldSymbolInfo(fieldSymbol),
 			IParameterSymbol parameterSymbol => SymbolInfoComponents.GetParameterSymbolInfo(parameterSymbol),
-			//ILocalSymbol localSymbol => SymbolInfoComponents.GetLocalSymbolInfo(localSymbol),
+			ILocalSymbol localSymbol => SymbolInfoComponents.GetLocalVariableSymbolInfo(localSymbol),
 			_ => new Control()
 		};
 		popupPanel.AddChild(symbolInfoNode);
