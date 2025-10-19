@@ -20,7 +20,7 @@
 
 <MudTreeView T="ISharpIdeNode" Dense="true" ExpandOnClick="true" SelectedValue="@SelectedNode" SelectedValueChanged="@SelectedNodeChanged">
 	<MudTreeViewItem T="ISharpIdeNode" TextTypo="Typo.body2" Expanded="true" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Primary" Value="@SolutionModel" Text="@SolutionModel.Name">
-		@foreach (var folder in SolutionModel.Folders)
+		@foreach (var folder in SolutionModel.SlnFolders)
 		{
 			@GetSolutionFolderFragment(folder)
 		}

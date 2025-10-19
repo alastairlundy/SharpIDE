@@ -10,7 +10,7 @@ public static class TreeMapperV2
 		return folder.Files
 			.Concat(folder.Folders.SelectMany(sub => sub.GetAllFiles()));
 	}
-	public static List<SharpIdeFolder> GetSubFolders(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel, ConcurrentBag<SharpIdeFile> allFiles)
+	public static List<SharpIdeFolder> GetSubFolders(string csprojectPath, SharpIdeProjectModel sharpIdeProjectModel, ConcurrentBag<SharpIdeFile> allFiles, ConcurrentBag<SharpIdeFolder> allFolders)
 	{
 		var projectDirectory = Path.GetDirectoryName(csprojectPath)!;
 		var rootFolder = new SharpIdeFolder
@@ -21,12 +21,12 @@ public static class TreeMapperV2
 			Files = [],
 			Folders = []
 		};
-		var subFolders = rootFolder.GetSubFolders(sharpIdeProjectModel, allFiles);
+		var subFolders = rootFolder.GetSubFolders(sharpIdeProjectModel, allFiles, allFolders);
 		return subFolders;
 	}
 
 	private static readonly string[] _excludedFolders = ["bin", "obj", "node_modules"];
-	public static List<SharpIdeFolder> GetSubFolders(this SharpIdeFolder folder, IExpandableSharpIdeNode parent, ConcurrentBag<SharpIdeFile> allFiles)
+	public static List<SharpIdeFolder> GetSubFolders(this SharpIdeFolder folder, IExpandableSharpIdeNode parent, ConcurrentBag<SharpIdeFile> allFiles, ConcurrentBag<SharpIdeFolder> allFolders)
 	{
 		var directoryInfo = new DirectoryInfo(folder.Path);
 		ConcurrentBag<SharpIdeFolder> subFolders = [];
@@ -47,8 +47,9 @@ public static class TreeMapperV2
 
 		Parallel.ForEach(subFolderInfos, subFolderInfo =>
 		{
-			var subFolder = new SharpIdeFolder(subFolderInfo, parent, allFiles);
+			var subFolder = new SharpIdeFolder(subFolderInfo, parent, allFiles, allFolders);
 			subFolders.Add(subFolder);
+			allFolders.Add(subFolder);
 		});
 
 		return subFolders.ToList();

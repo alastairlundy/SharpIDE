@@ -101,7 +101,7 @@ public partial class SolutionExplorerPanel : MarginContainer
 		}
 
 		// Add folders under solution
-		foreach (var folder in SolutionModel.Folders)
+		foreach (var folder in SolutionModel.SlnFolders)
 		{
 			AddSlnFolderToTree(rootItem, folder);
 		}

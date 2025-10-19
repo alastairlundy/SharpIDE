@@ -745,7 +745,7 @@ public class RoslynAnalysis
 		using var _ = SharpIdeOtel.Source.StartActivity($"{nameof(RoslynAnalysis)}.{nameof(AddDocument)}");
 		await _solutionLoadedTcs.Task;
 		Guard.Against.Null(fileModel, nameof(fileModel));
-		Guard.Against.NullOrEmpty(content, nameof(content));
+		Guard.Against.Null(content, nameof(content));
 
 		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
 

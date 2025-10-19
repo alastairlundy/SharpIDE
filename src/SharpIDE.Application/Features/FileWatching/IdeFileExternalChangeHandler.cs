@@ -23,6 +23,19 @@ public class IdeFileExternalChangeHandler
 		if (sharpIdeFile == null)
 		{
 			// If sharpIdeFile is null, it means the file was created externally, and we need to create it and add it to the solution model
+			var createdFileDirectory = Path.GetDirectoryName(filePath)!;
+
+			// TODO: Handle being contained by a project directly
+			//var containingProject = SolutionModel.AllProjects.SingleOrDefault(p => createdFileDirectory == Path.GetDirectoryName(p.FilePath));
+			var containingFolder = SolutionModel.AllFolders.SingleOrDefault(f => f.Path == createdFileDirectory);
+			if (containingFolder is null)
+			{
+				// TODO: Create the folder and add it to the solution model
+			}
+
+			sharpIdeFile = new SharpIdeFile(filePath, Path.GetFileName(filePath), containingFolder, []);
+			containingFolder.Files.Add(sharpIdeFile);
+			SolutionModel.AllFiles.Add(sharpIdeFile);
 			// sharpIdeFile = TODO;
 		}
 		Guard.Against.Null(sharpIdeFile, nameof(sharpIdeFile));
