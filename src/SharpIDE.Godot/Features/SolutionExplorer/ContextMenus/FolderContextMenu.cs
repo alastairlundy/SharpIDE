@@ -1,5 +1,6 @@
 ﻿using Godot;
 using SharpIDE.Application.Features.SolutionDiscovery;
+using SharpIDE.Godot.Features.SolutionExplorer.ContextMenus.Dialogs;
 
 namespace SharpIDE.Godot.Features.SolutionExplorer;
 
@@ -26,7 +27,7 @@ public partial class SolutionExplorerPanel
         menu.AddSubmenuNodeItem("Add", createNewSubmenu, (int)FolderContextMenuOptions.CreateNew);
         createNewSubmenu.AddItem("Directory", (int)CreateNewSubmenuOptions.Directory);
         createNewSubmenu.AddItem("C# File", (int)CreateNewSubmenuOptions.CSharpFile);
-        createNewSubmenu.IdPressed += OnCreateNewSubmenuPressed;
+        createNewSubmenu.IdPressed += id => OnCreateNewSubmenuPressed(id, folder);
         
         menu.AddItem("Reveal in File Explorer", (int)FolderContextMenuOptions.RevealInFileExplorer);
         menu.PopupHide += () => menu.QueueFree();
@@ -44,12 +45,16 @@ public partial class SolutionExplorerPanel
         menu.Popup();
     }
 
-    private void OnCreateNewSubmenuPressed(long id)
+    private readonly PackedScene _newDirectoryDialogScene = GD.Load<PackedScene>("uid://bgi4u18y8pt4x");
+    private void OnCreateNewSubmenuPressed(long id, SharpIdeFolder folder)
     {
         var actionId = (CreateNewSubmenuOptions)id;
         if (actionId is CreateNewSubmenuOptions.Directory)
         {
-            //OpenCreateNewFolderDialog(folder);
+            var newDirectoryDialog = _newDirectoryDialogScene.Instantiate<NewDirectoryDialog>();
+            newDirectoryDialog.ParentFolder = folder;
+            AddChild(newDirectoryDialog);
+            newDirectoryDialog.PopupCentered();
         }
         else if (actionId is CreateNewSubmenuOptions.CSharpFile)
         {
