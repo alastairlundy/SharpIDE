@@ -14,6 +14,8 @@ public partial class SearchAllFilesWindow : PopupPanel
 
     private CancellationTokenSource _cancellationTokenSource = new();
     
+    [Inject] private readonly SearchService _searchService = null!;
+    
     public override void _Ready()
     {
         _resultCountLabel = GetNode<Label>("%ResultCountLabel");
@@ -43,7 +45,7 @@ public partial class SearchAllFilesWindow : PopupPanel
 
     private async Task Search(string text, CancellationToken cancellationToken)
     {
-        var result = await SearchService.FindFiles(Solution, text, cancellationToken);
+        var result = await _searchService.FindFiles(Solution, text, cancellationToken);
         if (cancellationToken.IsCancellationRequested) return;
         await this.InvokeAsync(() =>
         {

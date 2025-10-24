@@ -1,13 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
+using Microsoft.Extensions.Logging;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 
 namespace SharpIDE.Application.Features.Search;
 
-public static class SearchService
+public class SearchService(ILogger<SearchService> logger)
 {
-	public static async Task<List<FindInFilesSearchResult>> FindInFiles(SharpIdeSolutionModel solutionModel, string searchTerm, CancellationToken cancellationToken)
+	private readonly ILogger<SearchService> _logger = logger;
+
+	public async Task<List<FindInFilesSearchResult>> FindInFiles(SharpIdeSolutionModel solutionModel, string searchTerm, CancellationToken cancellationToken)
 	{
 		if (searchTerm.Length < 4) // TODO: halt search once 100 results are found, and remove this restriction
 		{
@@ -37,11 +40,11 @@ public static class SearchService
 			}
 		).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 		timer.Stop();
-		Console.WriteLine($"Search completed in {timer.ElapsedMilliseconds} ms. Found {results.Count} results. {(cancellationToken.IsCancellationRequested ? "(Cancelled)" : "")}");
+		_logger.LogInformation("Search completed in {ElapsedMilliseconds}ms. Found {ResultCount} results. {Cancelled}", timer.ElapsedMilliseconds, results.Count, cancellationToken.IsCancellationRequested ? "(Cancelled)" : "");
 		return results.ToList();
 	}
 
-	public static async Task<List<FindFilesSearchResult>> FindFiles(SharpIdeSolutionModel solutionModel, string searchTerm, CancellationToken cancellationToken)
+	public async Task<List<FindFilesSearchResult>> FindFiles(SharpIdeSolutionModel solutionModel, string searchTerm, CancellationToken cancellationToken)
 	{
 		if (searchTerm.Length < 2) // TODO: halt search once 100 results are found, and remove this restriction
 		{
@@ -64,7 +67,7 @@ public static class SearchService
 			}
 		).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 		timer.Stop();
-		Console.WriteLine($"File search completed in {timer.ElapsedMilliseconds} ms. Found {results.Count} results. {(cancellationToken.IsCancellationRequested ? "(Cancelled)" : "")}");
+		_logger.LogInformation("File search completed in {ElapsedMilliseconds}ms. Found {ResultCount} results. {Cancelled}", timer.ElapsedMilliseconds, results.Count, cancellationToken.IsCancellationRequested ? "(Cancelled)" : "");
 		return results.ToList();
 	}
 }
