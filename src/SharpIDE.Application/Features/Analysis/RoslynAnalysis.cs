@@ -279,6 +279,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		_logger.LogInformation("RoslynAnalysis: Updating solution diagnostics");
 		var timer = Stopwatch.StartNew();
 		await _solutionLoadedTcs.Task;
+		// Performance improvements of ~15% have been observed with a large solution (100+ projects) by parallelizing this with Task.WhenAll, however it seems much heavier (14700K crashes sometimes 😅) so re-evaluate later
 		foreach (var project in _sharpIdeSolutionModel!.AllProjects)
 		{
 			var projectDiagnostics = await GetProjectDiagnostics(project, cancellationToken);
