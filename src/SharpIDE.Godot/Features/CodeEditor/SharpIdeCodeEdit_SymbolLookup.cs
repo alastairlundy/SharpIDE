@@ -13,6 +13,11 @@ public partial class SharpIdeCodeEdit
     private void OnSymbolLookup(string symbolString, long line, long column)
     {
         GD.Print($"Symbol lookup requested: {symbolString} at line {line}, column {column}");
+        var globalMousePosition = GetGlobalMousePosition(); // don't breakpoint before this, else your mouse position will be wrong
+        var clickedCharRect = GetRectAtLineColumn((int)line, (int)column);
+        var globalPosition = GetGlobalPosition();
+        var startSymbolCharGlobalPos = clickedCharRect.Position + globalPosition;
+
         _ = Task.GodotRun(async () =>
         {
             var (symbol, linePositionSpan, semanticInfo) = await _roslynAnalysis.LookupSymbolSemanticInfo(_currentFile, new LinePosition((int)line, (int)column));
@@ -56,7 +61,10 @@ public partial class SharpIdeCodeEdit
                         await this.InvokeAsync(() =>
                         {
                             AddChild(symbolLookupPopup);
-                            symbolLookupPopup.PopupCentered();
+                            symbolLookupPopup.Position = new Vector2I((int)globalMousePosition.X - 5, (int)startSymbolCharGlobalPos.Y);
+                            symbolLookupPopup.Popup();
+                            var currentMousePos = GetGlobalMousePosition();
+                            Input.WarpMouse(currentMousePos with {X = currentMousePos.X + 1}); // it seems that until the mouse moves, behind the popup can still receive mouse events, which causes symbol the hover symbol popup to appear.
                         });
                     }
                 }

@@ -19,13 +19,11 @@ public partial class SharpIdeCodeEdit
     {
         if (HasFocus() is false)
             return; // only show if we have focus, every tab is currently listening for this event, maybe find a better way
-        var globalMousePosition =
-            GetGlobalMousePosition(); // don't breakpoint before this, else your mouse position will be wrong
+        var globalMousePosition = GetGlobalMousePosition(); // don't breakpoint before this, else your mouse position will be wrong
         var lineHeight = GetLineHeight();
         GD.Print($"Symbol hovered: {symbol} at line {line}, column {column}");
 
-        var (roslynSymbol, linePositionSpan) =
-            await _roslynAnalysis.LookupSymbol(_currentFile, new LinePosition((int)line, (int)column));
+        var (roslynSymbol, linePositionSpan) = await _roslynAnalysis.LookupSymbol(_currentFile, new LinePosition((int)line, (int)column));
         if (roslynSymbol is null || linePositionSpan is null)
         {
             return;
@@ -47,10 +45,8 @@ public partial class SharpIdeCodeEdit
         // To debug location, make type a PopupPanel, and uncomment
         //symbolNameHoverWindow.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(1, 0, 0, 0.5f) });
 
-        var startSymbolCharRect =
-            GetRectAtLineColumn(linePositionSpan.Value.Start.Line, linePositionSpan.Value.Start.Character + 1);
-        var endSymbolCharRect =
-            GetRectAtLineColumn(linePositionSpan.Value.End.Line, linePositionSpan.Value.End.Character);
+        var startSymbolCharRect = GetRectAtLineColumn(linePositionSpan.Value.Start.Line, linePositionSpan.Value.Start.Character + 1);
+        var endSymbolCharRect = GetRectAtLineColumn(linePositionSpan.Value.End.Line, linePositionSpan.Value.End.Character);
         symbolNameHoverWindow.Size = new Vector2I(endSymbolCharRect.End.X - startSymbolCharRect.Position.X, lineHeight);
 
         var globalPosition = GetGlobalPosition();
