@@ -24,6 +24,7 @@ theme_override_fonts/font = ExtResource("1_s7ira")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_v06ln")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_7ptyn")
+highlight_all_occurrences = true
 highlight_current_line = true
 symbol_lookup_on_click = true
 symbol_tooltip_on_hover = true
