@@ -31,6 +31,9 @@ public partial class SharpIdeCodeEdit
                 GD.Print($"Symbol is declared here: {symbolString}");
                 // TODO: Lookup references instead
                 var references = await _roslynAnalysis.FindAllSymbolReferences(semanticInfo.Value.DeclaredSymbol);
+                // Filter out primary constructor references, as they are not useful to navigate to - we are already at the symbol declaration
+                // This may also filter out other useful references, so may need to revisit later
+                references = references.Where(s => s.LocationsArray.Length is not 0).ToImmutableArray();
                 if (references.Length is 1)
                 {
                     var reference = references[0];
