@@ -14,7 +14,7 @@ public partial class SharpIdeCodeEdit
         var texture = (symbolKind, typeKind, accessibility) switch
         {
             (SymbolKind.Method, _, _) => _csharpMethodIcon,
-            (SymbolKind.NamedType, TypeKind.Interface, _) => _csharpInterfaceIcon,
+            (_, TypeKind.Interface, _) => _csharpInterfaceIcon,
             (SymbolKind.NamedType, _, _) => _csharpClassIcon,
             //SymbolKind.Local => ,
             //SymbolKind.Property => ,
