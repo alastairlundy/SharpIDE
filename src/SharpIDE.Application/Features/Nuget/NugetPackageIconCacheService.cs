@@ -9,6 +9,7 @@ public class NugetPackageIconCacheService(IHttpClientFactory httpClientFactory)
 {
 	private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
+	// TODO: Add an in memory cache
 	public async Task<(byte[]? bytes, NugetPackageIconFormat?)> GetNugetPackageIcon(string packageId, Uri? iconUrl)
 	{
 		var appdataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

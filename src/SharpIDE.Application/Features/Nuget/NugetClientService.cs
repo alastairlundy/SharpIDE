@@ -13,14 +13,13 @@ public record struct IdePackageFromSourceResult(IPackageSearchMetadata PackageSe
 public class NugetClientService
 {
 	private readonly bool _includePrerelease = false;
+	private readonly SourceCacheContext _sourceCacheContext = new SourceCacheContext();
+	private readonly ILogger _nugetLogger = NullLogger.Instance;
 	public async Task<List<IdePackageResult>> GetTop100Results(string directoryPath, CancellationToken cancellationToken = default)
 	{
 		var settings = Settings.LoadDefaultSettings(root: directoryPath);
 		var packageSourceProvider = new PackageSourceProvider(settings);
 		var packageSources = packageSourceProvider.LoadPackageSources().Where(p => p.IsEnabled).ToList();
-
-		var logger = NullLogger.Instance;
-		var cache = new SourceCacheContext();
 
 		var packagesResult = new List<IdePackageResult>();
 
@@ -38,7 +37,7 @@ public class NugetClientService
 				filters: new SearchFilter(includePrerelease: _includePrerelease),
 				skip: 0,
 				take: 100,
-				log: logger,
+				log: _nugetLogger,
 				cancellationToken: cancellationToken).ConfigureAwait(false);
 
 			packagesResult.AddRange(results.Select(s => new IdePackageResult(s.Identity.Id, [new IdePackageFromSourceResult(s, source)])));
@@ -80,7 +79,7 @@ public class NugetClientService
 					filters: new SearchFilter(includePrerelease: _includePrerelease),
 					skip: 0,
 					take: 2,
-					log: logger,
+					log: _nugetLogger,
 					cancellationToken: cancellationToken).ConfigureAwait(false);
 				var foundPackage = results.SingleOrDefault(r => r.Identity.Id.Equals(package.PackageId, StringComparison.OrdinalIgnoreCase));
 				if (foundPackage != null)
@@ -91,5 +90,18 @@ public class NugetClientService
 		}
 
 		return topPackages;
+	}
+
+	public async Task<List<IPackageSearchMetadata>> GetAllVersionsOfPackageInSource(string packageId, PackageSource source, CancellationToken cancellationToken = default)
+	{
+			var repository = Repository.Factory.GetCoreV3(source);
+			var packageMetadataResource = await repository.GetResourceAsync<PackageMetadataResource>(cancellationToken).ConfigureAwait(false);
+
+			var metadata = await packageMetadataResource.GetMetadataAsync(
+				packageId, includePrerelease: _includePrerelease, includeUnlisted: false,
+				_sourceCacheContext, _nugetLogger, cancellationToken).ConfigureAwait(false);
+
+			//var packageByIdResource = await repository.GetResourceAsync<FindPackageByIdResource>(cancellationToken).ConfigureAwait(false);
+			return metadata.ToList();
 	}
 }
