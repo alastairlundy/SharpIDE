@@ -14,7 +14,10 @@ public interface IExpandableSharpIdeNode
 {
 	public bool Expanded { get; set; }
 }
-
+public interface ISolutionOrProject
+{
+	public string DirectoryPath { get; set; }
+}
 public interface IFolderOrProject : IExpandableSharpIdeNode, IChildSharpIdeNode
 {
 	public ObservableList<SharpIdeFolder> Folders { get; init; }
@@ -43,7 +46,7 @@ public interface IChildSharpIdeNode
 	}
 }
 
-public class SharpIdeSolutionModel : ISharpIdeNode, IExpandableSharpIdeNode
+public class SharpIdeSolutionModel : ISharpIdeNode, IExpandableSharpIdeNode, ISolutionOrProject
 {
 	public required string Name { get; set; }
 	public required string FilePath { get; set; }
@@ -91,11 +94,12 @@ public class SharpIdeSolutionFolder : ISharpIdeNode, IExpandableSharpIdeNode, IC
 		Projects = new ObservableHashSet<SharpIdeProjectModel>(intermediateModel.Projects.Select(x => new SharpIdeProjectModel(x, allProjects, allFiles, allFolders, this)));
 	}
 }
-public class SharpIdeProjectModel : ISharpIdeNode, IExpandableSharpIdeNode, IChildSharpIdeNode, IFolderOrProject
+public class SharpIdeProjectModel : ISharpIdeNode, IExpandableSharpIdeNode, IChildSharpIdeNode, IFolderOrProject, ISolutionOrProject
 {
 	public required string Name { get; set; }
 	public required string FilePath { get; set; }
-	public string ChildNodeBasePath => Path.GetDirectoryName(FilePath)!;
+	public required string DirectoryPath { get; set; }
+	public string ChildNodeBasePath => DirectoryPath;
 	public required ObservableList<SharpIdeFolder> Folders { get; init; }
 	public required ObservableList<SharpIdeFile> Files { get; init; }
 	public bool Expanded { get; set; }
@@ -110,6 +114,7 @@ public class SharpIdeProjectModel : ISharpIdeNode, IExpandableSharpIdeNode, IChi
 		Parent = parent;
 		Name = projectModel.Model.ActualDisplayName;
 		FilePath = projectModel.FullFilePath;
+		DirectoryPath = Path.GetDirectoryName(projectModel.FullFilePath)!;
 		Files = new ObservableList<SharpIdeFile>(TreeMapperV2.GetFiles(projectModel.FullFilePath, this, allFiles));
 		Folders = new ObservableList<SharpIdeFolder>(TreeMapperV2.GetSubFolders(projectModel.FullFilePath, this, allFiles, allFolders));
 		MsBuildEvaluationProjectTask = ProjectEvaluation.GetProject(projectModel.FullFilePath);
