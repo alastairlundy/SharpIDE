@@ -82,45 +82,46 @@ public static class ProjectEvaluation
 		var packages = new List<InstalledPackage>();
 		var dependencyMap = NugetDependencyGraph.GetPackageDependencyMap(assetsFile);
 
-		foreach (var target in assetsFile.Targets.Where(t => t.RuntimeIdentifier == null))
+		// We currently do not handle multi-targeted projects
+		var target = assetsFile.Targets.SingleOrDefault(t => t.RuntimeIdentifier == null);
+		if (target == null) return packages;
+
+		var tfm = target.TargetFramework.GetShortFolderName();
+		var tfmInfo = assetsFile.PackageSpec.TargetFrameworks
+			.FirstOrDefault(t => t.FrameworkName.Equals(target.TargetFramework));
+
+		if (tfmInfo == null) return packages;
+
+		var topLevelDependencies = tfmInfo.Dependencies
+			.DistinctBy(s => s.Name)
+			.Select(s => s.Name)
+			.ToHashSet();
+
+		foreach (var lockFileTargetLibrary in target.Libraries.Where(l => l.Type == "package"))
 		{
-			var tfm = target.TargetFramework.GetShortFolderName();
-			var tfmInfo = assetsFile.PackageSpec.TargetFrameworks
-				.FirstOrDefault(t => t.FrameworkName.Equals(target.TargetFramework));
+			var isTopLevel = topLevelDependencies.Contains(lockFileTargetLibrary.Name);
+			if (!includeTransitive && !isTopLevel) continue;
 
-			if (tfmInfo == null) continue;
+			var dependency = tfmInfo.Dependencies
+				.FirstOrDefault(d => d.Name.Equals(lockFileTargetLibrary.Name, StringComparison.OrdinalIgnoreCase));
 
-			var topLevelDependencies = tfmInfo.Dependencies
-				.DistinctBy(s => s.Name)
-				.Select(s => s.Name)
-				.ToHashSet();
-
-			foreach (var lockFileTargetLibrary in target.Libraries.Where(l => l.Type == "package"))
+			var dependents = dependencyMap.GetValueOrDefault(lockFileTargetLibrary.Name, []);
+			var mappedDependents = dependents.Select(d => new DependentPackage
 			{
-				var isTopLevel = topLevelDependencies.Contains(lockFileTargetLibrary.Name);
-				if (!includeTransitive && !isTopLevel) continue;
+				PackageName = d.PackageName,
+				RequestedVersion = d.PackageDependency.VersionRange
+			}).ToList();
 
-				var dependency = tfmInfo.Dependencies
-					.FirstOrDefault(d => d.Name.Equals(lockFileTargetLibrary.Name, StringComparison.OrdinalIgnoreCase));
-
-				var dependents = dependencyMap.GetValueOrDefault(lockFileTargetLibrary.Name, []);
-				var mappedDependents = dependents.Select(d => new DependentPackage
-				{
-					PackageName = d.PackageName,
-					RequestedVersion = d.PackageDependency.VersionRange
-				}).ToList();
-
-				packages.Add(new InstalledPackage
-				{
-					Name = lockFileTargetLibrary.Name,
-					RequestedVersion = dependency?.LibraryRange.VersionRange?.ToString() ?? "",
-					ResolvedVersion = lockFileTargetLibrary.Version?.ToString(),
-					TargetFramework = tfm,
-					IsTopLevel = isTopLevel,
-					IsAutoReferenced = dependency?.AutoReferenced ?? false,
-					DependentPackages = mappedDependents
-				});
-			}
+			packages.Add(new InstalledPackage
+			{
+				Name = lockFileTargetLibrary.Name,
+				RequestedVersion = dependency?.LibraryRange.VersionRange?.ToString() ?? "",
+				ResolvedVersion = lockFileTargetLibrary.Version?.ToString(),
+				TargetFramework = tfm,
+				IsTopLevel = isTopLevel,
+				IsAutoReferenced = dependency?.AutoReferenced ?? false,
+				DependentPackages = mappedDependents
+			});
 		}
 
 		return packages;
