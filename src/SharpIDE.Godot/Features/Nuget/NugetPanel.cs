@@ -34,14 +34,23 @@ public partial class NugetPanel : Control
         _installedPackagesVboxContainer.QueueFreeChildren();
         _implicitlyInstalledPackagesItemList.QueueFreeChildren();
         _availablePackagesItemList.QueueFreeChildren();
+        
+        _solutionOrProjectOptionButton.ItemSelected += OnSolutionOrProjectSelected;
+        OnSolutionOrProjectSelected(0);
+    }
 
+    private void OnSolutionOrProjectSelected(long index)
+    {
         _ = Task.GodotRun(async () =>
         {
             await Task.Delay(300);
-            foreach (var project in Solution!.AllProjects)
+            await this.InvokeAsync(() =>
             {
-                _solutionOrProjectOptionButton.AddIconItem(_csprojIcon, project.Name);
-            }
+                foreach (var project in Solution!.AllProjects)
+                {
+                    _solutionOrProjectOptionButton.AddIconItem(_csprojIcon, project.Name);
+                }
+            });
             var result = await _nugetClientService.GetTop100Results(Solution!.DirectoryPath);
             
             _ = Task.GodotRun(async () =>
