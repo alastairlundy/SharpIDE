@@ -10,7 +10,6 @@ public partial class PackageEntry : MarginContainer
     private Button _button;
     private Label _packageNameLabel = null!;
     private Label _installedVersionLabel = null!;
-    private Label _implicitlyInstalledVersionLabel = null!;
     private Label _latestVersionLabel = null!;
     private HBoxContainer _sourceNamesContainer = null!;
     private TextureRect _packageIconTextureRect = null!;
@@ -40,7 +39,6 @@ public partial class PackageEntry : MarginContainer
         _button = GetNode<Button>("Button");
         _packageNameLabel = GetNode<Label>("%PackageNameLabel");
         _installedVersionLabel = GetNode<Label>("%InstalledVersionLabel");
-        _implicitlyInstalledVersionLabel = GetNode<Label>("%ImplicitlyInstalledVersionLabel");
         _latestVersionLabel = GetNode<Label>("%LatestVersionLabel");
         _sourceNamesContainer = GetNode<HBoxContainer>("%SourceNamesHBoxContainer");
         _packageIconTextureRect = GetNode<TextureRect>("%PackageIconTextureRect");
