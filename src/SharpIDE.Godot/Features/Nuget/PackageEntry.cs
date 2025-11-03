@@ -59,7 +59,7 @@ public partial class PackageEntry : MarginContainer
 				.Select(g => new
 				{
 					RequestedVersion = g.Key,
-					PackageNames = g.Select(t => t.PackageName).ToList()
+					PackageNames = g.Select(t => t.PackageName).Distinct().ToList()
 				})
 				.ToList();
 			_button.TooltipText = $"""
