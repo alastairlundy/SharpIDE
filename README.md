@@ -38,6 +38,8 @@ A modern, cross platform & open source IDE for .NET
 ## Solution Picker
 <img width="842" height="498" alt="image" src="https://github.com/user-attachments/assets/044f0ed3-f679-4fbf-9c3c-c6180bfda7ab" />
 
+### Errors
+SharpIDE is still a WIP, so please do not rely on it for production usage. If you encounter an error, please raise an issue! 😊
 
 ### Building
 if using a preview .NET SDK, ensure that `DOTNET_ROLL_FORWARD_TO_PRERELEASE` is set to `1` as per https://github.com/godotengine/godot/issues/98334, otherwise it will blow up.
