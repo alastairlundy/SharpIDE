@@ -500,7 +500,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 		var selectedIndex = GetCodeCompletionSelectedIndex();
 		var selectedText = GetCodeCompletionOption(selectedIndex);
 		if (selectedText is null) return;
-		var completionItem = selectedText["default_value"].As<RefCountedContainer<IdeCompletionItem>>().Item;
+		var completionItem = selectedText["default_value"].As<GodotObjectContainer<IdeCompletionItem>>().Item;
 		_ = Task.GodotRun(async () =>
 		{
 			await _ideApplyCompletionService.ApplyCompletion(_currentFile, completionItem.CompletionItem, completionItem.Document);
@@ -519,7 +519,7 @@ public partial class SharpIdeCodeEdit : CodeEdit
 			var linePos = new LinePosition(caretLine, caretColumn);
 				
 			var completionsResult = await _roslynAnalysis.GetCodeCompletionsForDocumentAtPosition(_currentFile, linePos);
-			var completionOptions = new List<(CodeCompletionKind kind, string displayText, Texture2D? icon, RefCountedContainer<IdeCompletionItem> refCountedContainer)>(completionsResult.CompletionList.ItemsList.Count);
+			var completionOptions = new List<(CodeCompletionKind kind, string displayText, Texture2D? icon, GodotObjectContainer<IdeCompletionItem> refCountedContainer)>(completionsResult.CompletionList.ItemsList.Count);
 
 			foreach (var completionItem in completionsResult.CompletionList.ItemsList)
 			{
@@ -546,7 +546,8 @@ public partial class SharpIdeCodeEdit : CodeEdit
 				if (symbolKind is null && (isMethod || isExtensionMethod)) symbolKind = SymbolKind.Method;
 				var icon = GetIconForCompletion(symbolKind, typeKind, accessibilityModifier, isKeyword);
 				var ideItem = new IdeCompletionItem(completionItem, completionsResult.Document);
-				var refContainer = new RefCountedContainer<IdeCompletionItem>(ideItem);
+				// TODO: This is a GodotObjectContainer to avoid errors with the RefCountedContainer?? But the workaround 100% causes a memory leak as these are never freed, unlike RefCounted. Do this better
+				var refContainer = new GodotObjectContainer<IdeCompletionItem>(ideItem);
 
 				completionOptions.Add((godotCompletionType, completionItem.DisplayText, icon, refContainer));
 			}
