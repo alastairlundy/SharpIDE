@@ -316,7 +316,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		using var _ = SharpIdeOtel.Source.StartActivity($"{nameof(RoslynAnalysis)}.{nameof(GetProjectDiagnosticsForFile)}");
 		await _solutionLoadedTcs.Task;
 		if (sharpIdeFile.IsRoslynWorkspaceFile is false) return [];
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)sharpIdeFile).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(sharpIdeFile);
 		var compilation = await project.GetCompilationAsync(cancellationToken);
 		Guard.Against.Null(compilation, nameof(compilation));
 
@@ -351,7 +351,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 
 	private static async Task<Document> GetDocumentForSharpIdeFile(SharpIdeFile fileModel, CancellationToken cancellationToken = default)
 	{
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 		var document = fileModel.IsCsharpFile ? project.Documents.SingleOrDefault(s => s.FilePath == fileModel.Path)
 				: await GetRazorSourceGeneratedDocumentInProjectForSharpIdeFile(project, fileModel, cancellationToken);
 		Guard.Against.Null(document, nameof(document));
@@ -375,8 +375,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		using var _ = SharpIdeOtel.Source.StartActivity($"{nameof(RoslynAnalysis)}.{nameof(GetRazorDocumentSyntaxHighlighting)}");
 		await _solutionLoadedTcs.Task;
 		var timer = Stopwatch.StartNew();
-		var sharpIdeProjectModel = ((IChildSharpIdeNode) fileModel).GetNearestProjectNode()!;
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == sharpIdeProjectModel!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 		if (fileModel.IsRazorFile is false)
 		{
 			return [];
@@ -482,7 +481,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 	{
 		using var _ = SharpIdeOtel.Source.StartActivity($"{nameof(RoslynAnalysis)}.{nameof(GetDocumentSyntaxHighlighting)}");
 		await _solutionLoadedTcs.Task;
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 		if (fileModel.IsCsharpFile is false)
 		{
 			//throw new InvalidOperationException("File is not a .cs");
@@ -767,8 +766,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 
 	private async Task<(ISymbol? symbol, LinePositionSpan? linePositionSpan)> LookupSymbolInRazor(SharpIdeFile fileModel, LinePosition linePosition, CancellationToken cancellationToken = default)
 	{
-		var sharpIdeProjectModel = ((IChildSharpIdeNode) fileModel).GetNearestProjectNode()!;
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == sharpIdeProjectModel!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 
 		var additionalDocument = project.AdditionalDocuments.Single(s => s.FilePath == fileModel.Path);
 
@@ -798,7 +796,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 
 	private async Task<(ISymbol? symbol, LinePositionSpan? linePositionSpan)> LookupSymbolInCs(SharpIdeFile fileModel, LinePosition linePosition)
 	{
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 		var document = project.Documents.Single(s => s.FilePath == fileModel.Path);
 		Guard.Against.Null(document, nameof(document));
 		var sourceText = await document.GetTextAsync();
@@ -811,7 +809,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 
 	private async Task<(ISymbol? symbol, LinePositionSpan? linePositionSpan, TokenSemanticInfo? semanticInfo)> LookupSymbolSemanticInfoInCs(SharpIdeFile fileModel, LinePosition linePosition, CancellationToken cancellationToken = default)
 	{
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 		var document = project.Documents.Single(s => s.FilePath == fileModel.Path);
 		Guard.Against.Null(document, nameof(document));
 		var sourceText = await document.GetTextAsync(cancellationToken);
@@ -826,8 +824,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 
 	private async Task<(ISymbol? symbol, LinePositionSpan? linePositionSpan, TokenSemanticInfo? semanticInfo)> LookupSymbolSemanticInfoInRazor(SharpIdeFile fileModel, LinePosition linePosition, CancellationToken cancellationToken = default)
 	{
-		var sharpIdeProjectModel = ((IChildSharpIdeNode) fileModel).GetNearestProjectNode()!;
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == sharpIdeProjectModel!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 
 		var additionalDocument = project.AdditionalDocuments.Single(s => s.FilePath == fileModel.Path);
 
@@ -902,7 +899,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		Guard.Against.Null(fileModel, nameof(fileModel));
 		Guard.Against.NullOrEmpty(newContent, nameof(newContent));
 
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 
 		var sourceText = SourceText.From(newContent, Encoding.UTF8);
 		var document = fileModel switch
@@ -938,7 +935,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		Guard.Against.Null(fileModel, nameof(fileModel));
 		Guard.Against.Null(content, nameof(content));
 
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 
 		var existingDocument = fileModel switch
 		{
@@ -969,7 +966,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		await _solutionLoadedTcs.Task;
 		Guard.Against.Null(fileModel, nameof(fileModel));
 
-		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == ((IChildSharpIdeNode)fileModel).GetNearestProjectNode()!.FilePath);
+		var project = GetProjectForSharpIdeFile(fileModel);
 
 		var document = fileModel switch
 		{
@@ -1000,5 +997,18 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		var documentId = _workspace!.CurrentSolution.GetDocumentIdsWithFilePath(oldFilePath).Single();
 		var updatedSolution = _workspace.CurrentSolution.WithDocumentName(documentId, sharpIdeFile.Name);
 		_workspace.TryApplyChanges(updatedSolution);
+	}
+
+	private static Project GetProjectForSharpIdeFile(SharpIdeFile sharpIdeFile)
+	{
+		var sharpIdeProjectModel = ((IChildSharpIdeNode)sharpIdeFile).GetNearestProjectNode()!;
+		var project = GetProjectForSharpIdeProjectModel(sharpIdeProjectModel);
+		return project;
+	}
+
+	private static Project GetProjectForSharpIdeProjectModel(SharpIdeProjectModel projectModel)
+	{
+		var project = _workspace!.CurrentSolution.Projects.Single(s => s.FilePath == projectModel.FilePath);
+		return project;
 	}
 }
