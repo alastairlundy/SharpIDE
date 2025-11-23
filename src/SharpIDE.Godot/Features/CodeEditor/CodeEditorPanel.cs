@@ -126,7 +126,7 @@ public partial class CodeEditorPanel : MarginContainer
         
         if (executionStopInfo.FilePath != currentSharpIdeFile?.Path)
         {
-            var file = Solution.AllFiles.Single(s => s.Path == executionStopInfo.FilePath);
+            var file = Solution.AllFiles[executionStopInfo.FilePath];
             await GodotGlobalEvents.Instance.FileExternallySelected.InvokeParallelAsync(file, null).ConfigureAwait(false);
         }
         var lineInt = executionStopInfo.Line - 1; // Debugging is 1-indexed, Godot is 0-indexed

@@ -18,7 +18,7 @@ public class SearchService(ILogger<SearchService> logger)
 		}
 
 		var timer = Stopwatch.StartNew();
-		var files = solutionModel.AllFiles;
+		var files = solutionModel.AllFiles.Values.ToList();
 		ConcurrentBag<FindInFilesSearchResult> results = [];
 		await Parallel.ForEachAsync(files, cancellationToken, async (file, ct) =>
 			{
@@ -52,7 +52,7 @@ public class SearchService(ILogger<SearchService> logger)
 		}
 
 		var timer = Stopwatch.StartNew();
-		var files = solutionModel.AllFiles;
+		var files = solutionModel.AllFiles.Values.ToList();
 		ConcurrentBag<FindFilesSearchResult> results = [];
 		await Parallel.ForEachAsync(files, cancellationToken, async (file, ct) =>
 			{

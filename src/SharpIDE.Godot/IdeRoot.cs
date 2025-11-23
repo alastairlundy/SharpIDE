@@ -164,7 +164,7 @@ public partial class IdeRoot : Control
 			
 			var previousTabs = Singletons.AppState.RecentSlns.Single(s => s.FilePath == solutionModel.FilePath).IdeSolutionState.OpenTabs;
 			var filesToOpen = previousTabs
-				.Select(s => (solutionModel.AllFiles.SingleOrDefault(f => f.Path == s.FilePath), new SharpIdeFileLinePosition(s.CaretLine, s.CaretColumn), s.IsSelected))
+				.Select(s => (solutionModel.AllFiles.GetValueOrDefault(s.FilePath), new SharpIdeFileLinePosition(s.CaretLine, s.CaretColumn), s.IsSelected))
 				.Where(s => s.Item1 is not null)
 				.OfType<(SharpIdeFile file, SharpIdeFileLinePosition linePosition, bool isSelected)>()
 				.ToList();

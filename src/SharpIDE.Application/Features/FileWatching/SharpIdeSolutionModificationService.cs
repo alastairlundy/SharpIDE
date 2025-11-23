@@ -1,14 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using SharpIDE.Application.Features.SolutionDiscovery;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 
 namespace SharpIDE.Application.Features.FileWatching;
 
 /// Does not do any file system operations, only modifies the in-memory solution model
-public class SharpIdeSolutionModificationService(FileChangedService fileChangedService)
+public class SharpIdeSolutionModificationService(FileChangedService fileChangedService, ILogger<SharpIdeSolutionModificationService> logger)
 {
 	private readonly FileChangedService _fileChangedService = fileChangedService;
+	private readonly ILogger<SharpIdeSolutionModificationService> _logger = logger;
 
 	public SharpIdeSolutionModel SolutionModel { get; set; } = null!;
 
@@ -24,7 +26,11 @@ public class SharpIdeSolutionModificationService(FileChangedService fileChangedS
 
 		parentNode.Folders.Insert(correctInsertionPosition, sharpIdeFolder);
 		SolutionModel.AllFolders.AddRange((IEnumerable<SharpIdeFolder>)[sharpIdeFolder, ..allFolders]);
-		SolutionModel.AllFiles.AddRange(allFiles);
+		foreach (var sharpIdeFile in allFiles)
+		{
+			var success = SolutionModel.AllFiles.TryAdd(sharpIdeFile.Path, sharpIdeFile);
+			if (success is false) _logger.LogWarning("File {filePath} already exists in SolutionModel.AllFiles when adding directory {directoryPath}", sharpIdeFile.Path, addedDirectoryPath);
+		}
 		foreach (var file in allFiles)
 		{
 			await _fileChangedService.SharpIdeFileAdded(file, await File.ReadAllTextAsync(file.Path));
@@ -55,7 +61,11 @@ public class SharpIdeSolutionModificationService(FileChangedService fileChangedS
 
 		var filesToRemove = foldersToRemove.SelectMany(f => f.Files).ToList();
 
-		SolutionModel.AllFiles.RemoveRange(filesToRemove);
+		foreach (var sharpIdeFile in filesToRemove)
+		{
+			var success = SolutionModel.AllFiles.TryRemove(sharpIdeFile.Path, out _);
+			if (success is false) _logger.LogWarning("File {filePath} not found in SolutionModel.AllFiles when removing directory {directoryPath}", sharpIdeFile.Path, folder.Path);
+		}
 		SolutionModel.AllFolders.RemoveRange(foldersToRemove);
 		foreach (var file in filesToRemove)
 		{
@@ -138,7 +148,8 @@ public class SharpIdeSolutionModificationService(FileChangedService fileChangedS
 		var correctInsertionPosition = GetInsertionPosition(parentNode, sharpIdeFile);
 
 		parentNode.Files.Insert(correctInsertionPosition, sharpIdeFile);
-		SolutionModel.AllFiles.Add(sharpIdeFile);
+		var success = SolutionModel.AllFiles.TryAdd(sharpIdeFile.Path, sharpIdeFile);
+		if (success is false) _logger.LogWarning("File {filePath} already exists in SolutionModel.AllFiles when creating file", sharpIdeFile.Path);
 		await _fileChangedService.SharpIdeFileAdded(sharpIdeFile, contents);
 		return sharpIdeFile;
 	}
@@ -192,7 +203,8 @@ public class SharpIdeSolutionModificationService(FileChangedService fileChangedS
 	{
 		var parentFolderOrProject = (IFolderOrProject)file.Parent;
 		parentFolderOrProject.Files.Remove(file);
-		SolutionModel.AllFiles.Remove(file);
+		var success = SolutionModel.AllFiles.TryRemove(file.Path, out _);
+		if (success is false) _logger.LogWarning("File {filePath} not found in SolutionModel.AllFiles when removing file", file.Path);
 		await _fileChangedService.SharpIdeFileRemoved(file);
 	}
 

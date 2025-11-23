@@ -709,7 +709,7 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 			.Select(async (Document doc, CancellationToken ct) =>
 			{
 				var text = await doc.GetTextAsync(ct);
-				var sharpFile = _sharpIdeSolutionModel!.AllFiles.Single(f => f.Path == doc.FilePath);
+				var sharpFile = _sharpIdeSolutionModel!.AllFiles[doc.FilePath!];
 				return (sharpFile, text.ToString());
 			})
 			.ToListAsync(cancellationToken);
@@ -723,8 +723,8 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		if (semanticModel is null) return null;
 		var enclosingSymbol = ReferenceLocationExtensions.GetEnclosingMethodOrPropertyOrField(semanticModel, referenceLocation);
 		var lineSpan = referenceLocation.Location.GetMappedLineSpan();
-		var file = _sharpIdeSolutionModel!.AllFiles.SingleOrDefault(f => f.Path == lineSpan.Path);
-		var result = new IdeReferenceLocationResult(referenceLocation, file!, enclosingSymbol);
+		var file = _sharpIdeSolutionModel!.AllFiles[lineSpan.Path];
+		var result = new IdeReferenceLocationResult(referenceLocation, file, enclosingSymbol);
 		return result;
 	}
 

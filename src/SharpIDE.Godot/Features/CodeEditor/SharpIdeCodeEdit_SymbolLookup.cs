@@ -44,7 +44,7 @@ public partial class SharpIdeCodeEdit
                         var referenceLocation = locations[0];
 
                         var referenceLineSpan = referenceLocation.Location.GetMappedLineSpan();
-                        var sharpIdeFile = Solution!.AllFiles.SingleOrDefault(f => f.Path == referenceLineSpan.Path);
+                        var sharpIdeFile = Solution!.AllFiles.GetValueOrDefault(referenceLineSpan.Path);
                         if (sharpIdeFile is null)
                         {
                             GD.Print($"Reference file not found in solution: {referenceLineSpan.Path}");
@@ -82,7 +82,7 @@ public partial class SharpIdeCodeEdit
                     // Lets jump to the definition
                     var definitionLocation = locations[0];
                     var definitionLineSpan = definitionLocation.GetMappedLineSpan();
-                    var sharpIdeFile = Solution!.AllFiles.SingleOrDefault(f => f.Path == definitionLineSpan.Path);
+                    var sharpIdeFile = Solution!.AllFiles.GetValueOrDefault(definitionLineSpan.Path);
                     if (sharpIdeFile is null)
                     {
                         GD.Print($"Definition file not found in solution: {definitionLineSpan.Path}");

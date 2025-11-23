@@ -22,7 +22,7 @@ public static class VsPersistenceMapper
 		{
 			// Assumes solution file is at git repo root
 			var filePath = new FileInfo(Path.Combine(solutionModel.DirectoryPath, entry.FilePath)).FullName; // used to normalise path separators
-			var fileInSolution = solutionModel.AllFiles.SingleOrDefault(f => f.Path.Equals(filePath, StringComparison.OrdinalIgnoreCase));
+			var fileInSolution = solutionModel.AllFiles.GetValueOrDefault(filePath);
 			if (fileInSolution is null) continue;
 
 			var mappedGitStatus = entry.State switch

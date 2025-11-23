@@ -28,14 +28,14 @@ public class IdeFileExternalChangeHandler
 
 	private async Task OnFileRenamed(string oldFilePath, string newFilePath)
 	{
-		var sharpIdeFile = SolutionModel.AllFiles.SingleOrDefault(f => f.Path == oldFilePath);
+		var sharpIdeFile = SolutionModel.AllFiles.GetValueOrDefault(oldFilePath);
 		if (sharpIdeFile is null) return;
 		await _sharpIdeSolutionModificationService.RenameFile(sharpIdeFile, Path.GetFileName(newFilePath));
 	}
 
 	private async Task OnFileDeleted(string filePath)
 	{
-		var sharpIdeFile = SolutionModel.AllFiles.SingleOrDefault(f => f.Path == filePath);
+		var sharpIdeFile = SolutionModel.AllFiles.GetValueOrDefault(filePath);
 		if (sharpIdeFile is null) return;
 		await _sharpIdeSolutionModificationService.RemoveFile(sharpIdeFile);
 	}
@@ -90,7 +90,7 @@ public class IdeFileExternalChangeHandler
 
 	private async Task OnFileCreated(string filePath)
 	{
-		var sharpIdeFile = SolutionModel.AllFiles.SingleOrDefault(f => f.Path == filePath);
+		var sharpIdeFile = SolutionModel.AllFiles.GetValueOrDefault(filePath);
 		if (sharpIdeFile is not null)
 		{
 			// It was likely already created via a parent folder creation
@@ -110,7 +110,7 @@ public class IdeFileExternalChangeHandler
 
 	private async Task OnFileChanged(string filePath)
 	{
-		var sharpIdeFile = SolutionModel.AllFiles.SingleOrDefault(f => f.Path == filePath);
+		var sharpIdeFile = SolutionModel.AllFiles.GetValueOrDefault(filePath);
 		if (sharpIdeFile is null) return;
 		if (sharpIdeFile.SuppressDiskChangeEvents is true) return;
 		if (sharpIdeFile.LastIdeWriteTime is not null)
@@ -123,7 +123,7 @@ public class IdeFileExternalChangeHandler
 			}
 		}
 		_logger.LogInformation("IdeFileExternalChangeHandler: Changed - '{FilePath}'", filePath);
-		var file = SolutionModel.AllFiles.SingleOrDefault(f => f.Path == filePath);
+		var file = SolutionModel.AllFiles.GetValueOrDefault(filePath);
 		if (file is not null)
 		{
 			await _fileChangedService.SharpIdeFileChanged(file, await File.ReadAllTextAsync(file.Path), FileChangeType.ExternalChange);

@@ -119,7 +119,7 @@ public partial class ProblemsPanel : Control
     private void OpenDocumentContainingDiagnostic(Diagnostic diagnostic)
     {
         var fileLinePositionSpan = diagnostic.Location.GetMappedLineSpan();
-        var file = Solution!.AllFiles.Single(f => f.Path == fileLinePositionSpan.Path);
+        var file = Solution!.AllFiles[fileLinePositionSpan.Path];
         var linePosition = new SharpIdeFileLinePosition(fileLinePositionSpan.StartLinePosition.Line, fileLinePositionSpan.StartLinePosition.Character);
         GodotGlobalEvents.Instance.FileExternallySelected.InvokeParallelFireAndForget(file, linePosition);
     }

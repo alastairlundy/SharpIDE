@@ -55,7 +55,7 @@ public class SharpIdeSolutionModel : ISharpIdeNode, IExpandableSharpIdeNode, ISo
 	public required ObservableHashSet<SharpIdeProjectModel> Projects { get; set; }
 	public required ObservableHashSet<SharpIdeSolutionFolder> SlnFolders { get; set; }
 	public required HashSet<SharpIdeProjectModel> AllProjects { get; set; } // TODO: this isn't thread safe
-	public required HashSet<SharpIdeFile> AllFiles { get; set; } // TODO: this isn't thread safe
+	public required ConcurrentDictionary<string, SharpIdeFile> AllFiles { get; set; }
 	public required HashSet<SharpIdeFolder> AllFolders { get; set; } // TODO: this isn't thread safe
 	public bool Expanded { get; set; }
 
@@ -72,7 +72,7 @@ public class SharpIdeSolutionModel : ISharpIdeNode, IExpandableSharpIdeNode, ISo
 		Projects = new ObservableHashSet<SharpIdeProjectModel>(intermediateModel.Projects.Select(s => new SharpIdeProjectModel(s, allProjects, allFiles, allFolders, this)));
 		SlnFolders = new ObservableHashSet<SharpIdeSolutionFolder>(intermediateModel.SolutionFolders.Select(s => new SharpIdeSolutionFolder(s, allProjects, allFiles, allFolders, this)));
 		AllProjects = allProjects.ToHashSet();
-		AllFiles = allFiles.ToHashSet();
+		AllFiles = new ConcurrentDictionary<string, SharpIdeFile>(allFiles.DistinctBy(s => s.Path).ToDictionary(s => s.Path));
 		AllFolders = allFolders.ToHashSet();
 	}
 }
