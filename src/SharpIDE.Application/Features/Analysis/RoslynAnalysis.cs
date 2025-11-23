@@ -927,7 +927,13 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		Guard.Against.Null(fileModel, nameof(fileModel));
 		Guard.Against.NullOrEmpty(newContent, nameof(newContent));
 
-		var documentId = _workspace!.CurrentSolution.GetDocumentIdsWithFilePath(fileModel.Path).SingleOrDefault();
+		var documentIdsWithFilePath = _workspace!.CurrentSolution.GetDocumentIdsWithFilePath(fileModel.Path);
+		var documentId = documentIdsWithFilePath switch
+		{
+			{Length: 1} => documentIdsWithFilePath[0],
+			{Length: > 1} => documentIdsWithFilePath.SingleOrDefault(d => d.ProjectId == GetProjectForSharpIdeFile(fileModel).Id),
+			_ => null
+		};
 		if (documentId is null)
 		{
 			_logger.LogWarning("UpdateDocument failed: Document '{DocumentPath}' not found in workspace", fileModel.Path);
@@ -1022,7 +1028,13 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		await _solutionLoadedTcs.Task;
 		Guard.Against.Null(fileModel, nameof(fileModel));
 
-		var documentId = _workspace!.CurrentSolution.GetDocumentIdsWithFilePath(fileModel.Path).SingleOrDefault();
+		var documentIdsWithFilePath = _workspace!.CurrentSolution.GetDocumentIdsWithFilePath(fileModel.Path);
+		var documentId = documentIdsWithFilePath switch
+		{
+			{Length: 1} => documentIdsWithFilePath[0],
+			{Length: > 1} => documentIdsWithFilePath.SingleOrDefault(d => d.ProjectId == GetProjectForSharpIdeFile(fileModel).Id),
+			_ => null
+		};
 		if (documentId is null)
 		{
 			_logger.LogWarning("RemoveDocument failed: Document '{DocumentPath}' not found in workspace", fileModel.Path);
