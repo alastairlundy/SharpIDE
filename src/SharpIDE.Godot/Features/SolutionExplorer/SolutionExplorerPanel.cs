@@ -32,8 +32,7 @@ public partial class SolutionExplorerPanel : MarginContainer
 	public SharpIdeSolutionModel SolutionModel { get; set; } = null!;
 	private Tree _tree = null!;
 	private TreeItem _rootItem = null!;
-	
-	[Inject] private readonly IdeNavigationHistoryService _navigationHistoryService = null!;
+
 	private enum ClipboardOperation { Cut, Copy }
 
 	private (List<IFileOrFolder>, ClipboardOperation)? _itemsOnClipboard;

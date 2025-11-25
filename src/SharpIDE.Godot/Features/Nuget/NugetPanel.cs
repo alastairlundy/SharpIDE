@@ -22,7 +22,7 @@ public partial class NugetPanel : Control
 	private SharpIdeSolutionModel? _solution;
 	
 	[Inject] private readonly NugetClientService _nugetClientService = null!;
-	[Inject] private readonly SharpIdeSolutionAccessor _sharpIdeSolutionAccessor;
+	[Inject] private readonly SharpIdeSolutionAccessor _sharpIdeSolutionAccessor = null!;
 	
 	private readonly PackedScene _packageEntryScene = ResourceLoader.Load<PackedScene>("uid://cqc2xlt81ju8s");
 	private readonly Texture2D _csprojIcon = ResourceLoader.Load<Texture2D>("uid://cqt30ma6xgder");
@@ -59,7 +59,7 @@ public partial class NugetPanel : Control
 		{
 			foreach (var project in _projects.Skip(1))
 			{
-				_solutionOrProjectOptionButton.AddIconItem(_csprojIcon, project.Name);
+				_solutionOrProjectOptionButton.AddIconItem(_csprojIcon, project!.Name);
 			}
 			_solutionOrProjectOptionButton.ItemSelected += OnSolutionOrProjectSelected;
 		});

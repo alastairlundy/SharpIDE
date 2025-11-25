@@ -7,7 +7,7 @@ namespace SharpIDE.Godot.Features.Nuget;
 
 public partial class PackageEntry : MarginContainer
 {
-	private Button _button;
+	private Button _button = null!;
 	private Label _packageNameLabel = null!;
 	private Label _installedVersionLabel = null!;
 	private Label _latestVersionLabel = null!;

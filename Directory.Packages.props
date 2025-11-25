@@ -44,10 +44,10 @@
     <PackageVersion Include="Microsoft.Net.Compilers.Razor.Toolset" Version="10.0.0-preview.25521.106" />
     <PackageVersion Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol" Version="18.0.10427.1" />
     <PackageVersion Include="Microsoft.VisualStudio.SolutionPersistence" Version="1.0.52" />
-    <PackageVersion Include="MudBlazor" Version="8.14.0" />
-    <PackageVersion Include="NuGet.ProjectModel" Version="7.1.0-preview.1.42" />
-    <PackageVersion Include="NuGet.Protocol" Version="7.1.0-preview.1.42" />
-    <PackageVersion Include="NuGet.Versioning" Version="7.1.0-preview.1.42" />
+    <PackageVersion Include="MudBlazor" Version="8.15.0" />
+    <PackageVersion Include="NuGet.ProjectModel" Version="7.3.0-preview.1.24" />
+    <PackageVersion Include="NuGet.Protocol" Version="7.3.0-preview.1.24" />
+    <PackageVersion Include="NuGet.Versioning" Version="7.3.0-preview.1.24" />
     <PackageVersion Include="ObservableCollections" Version="3.3.4" />
     <PackageVersion Include="ObservableCollections.R3" Version="3.3.4" />
     <PackageVersion Include="Octokit" Version="14.0.0" />

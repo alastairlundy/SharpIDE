@@ -69,8 +69,8 @@
 
 	public void Dispose() => GlobalEvents.Instance.ProjectsRunningChanged.Unsubscribe(OnProjectsRunningChanged);
 
-	private void SetActiveTab(SharpIdeProjectModel project)
+	private async Task SetActiveTab(SharpIdeProjectModel project)
 	{
-		_mudTabsRef.ActivatePanel(project);
+		await _mudTabsRef.ActivatePanelAsync(project);
 	}
 }
