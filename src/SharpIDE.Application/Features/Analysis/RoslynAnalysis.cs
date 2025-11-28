@@ -919,15 +919,10 @@ public class RoslynAnalysis(ILogger<RoslynAnalysis> logger, BuildService buildSe
 		Guard.Against.NullOrEmpty(newContent, nameof(newContent));
 
 		var documentIdsWithFilePath = _workspace!.CurrentSolution.GetDocumentIdsWithFilePath(fileModel.Path);
-		var documentId = documentIdsWithFilePath switch
-		{
-			{Length: 1} => documentIdsWithFilePath[0],
-			{Length: > 1} => documentIdsWithFilePath.SingleOrDefault(d => d.ProjectId == GetProjectForSharpIdeFile(fileModel).Id),
-			_ => null
-		};
+		var documentId = documentIdsWithFilePath.FirstOrDefault(); // Linked files should take care of the rest of the documents with the same path
 		if (documentId is null)
 		{
-			_logger.LogWarning("UpdateDocument failed: Document '{DocumentPath}' not found in workspace", fileModel.Path);
+			_logger.LogTrace("UpdateDocument failed: Document '{DocumentPath}' not found in workspace", fileModel.Path);
 			return false;
 		}
 

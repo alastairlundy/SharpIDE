@@ -107,10 +107,9 @@ public class FileChangedService
 		}
 		var afterSaveTask = (file, changeType) switch
 		{
-			({ IsRoslynWorkspaceFile: true }, _) => HandleWorkspaceFileChanged(file, newContents),
 			({ IsCsprojFile: true }, FileChangeType.IdeSaveToDisk or FileChangeType.ExternalChange) => HandleCsprojChanged(file),
 			({ IsCsprojFile: true }, _) => Task.CompletedTask,
-			_ => throw new InvalidOperationException("Unknown file change type.")
+			(_, _) => HandlePotentialWorkspaceFile_Changed(file, newContents)
 		};
 		await afterSaveTask;
 	}
@@ -130,7 +129,8 @@ public class FileChangedService
 		_updateSolutionDiagnosticsQueue.AddWork();
 	}
 
-	private async Task HandleWorkspaceFileChanged(SharpIdeFile file, string newContents)
+	/// AdditionalFiles such as txt files may have changed, so we need to attempt to update the workspace regardless of extension
+	private async Task HandlePotentialWorkspaceFile_Changed(SharpIdeFile file, string newContents)
 	{
 		var fileUpdatedInWorkspace = await _roslynAnalysis.UpdateDocument(file, newContents);
 		if (fileUpdatedInWorkspace is false) return;
