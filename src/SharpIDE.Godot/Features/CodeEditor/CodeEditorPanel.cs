@@ -8,6 +8,7 @@ using SharpIDE.Application.Features.Run;
 using SharpIDE.Application.Features.SolutionDiscovery;
 using SharpIDE.Application.Features.SolutionDiscovery.VsPersistence;
 using SharpIDE.Godot.Features.IdeSettings;
+using SharpIDE.Godot.Features.SolutionExplorer;
 
 namespace SharpIDE.Godot.Features.CodeEditor;
 
@@ -98,7 +99,7 @@ public partial class CodeEditorPanel : MarginContainer
         {
             _tabContainer.AddChild(newTab);
             var newTabIndex = _tabContainer.GetTabCount() - 1;
-            _tabContainer.SetTabIcon(newTabIndex, CsFileTexture);
+            _tabContainer.SetIconsForFileExtension(file, newTabIndex);
             _tabContainer.SetTabTitle(newTabIndex, file.Name);
             _tabContainer.SetTabTooltip(newTabIndex, file.Path);
             _tabContainer.CurrentTab = newTabIndex;
@@ -154,5 +155,20 @@ public partial class CodeEditorPanel : MarginContainer
         {
             await _runService.SendDebuggerStepOver(threadId);
         });
+    }
+}
+
+file static class TabContainerExtensions
+{
+    extension(TabContainer tabContainer)
+    {
+        public void SetIconsForFileExtension(SharpIdeFile file, int newTabIndex)
+        {
+            var (icon, overlayIcon) = FileIconHelper.GetIconForFileExtension(file.Extension);
+            tabContainer.SetTabIcon(newTabIndex, icon);
+            
+            // Unfortunately TabContainer doesn't have a SetTabIconOverlay method
+            //tabContainer.SetIconOverlay(0, overlayIcon);
+        }
     }
 }
