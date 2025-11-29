@@ -22,6 +22,7 @@ public partial class SolutionExplorerPanel
     private readonly Texture2D _propsFileOverlayIcon = ResourceLoader.Load<Texture2D>("uid://fa7tdmldi206");
     private readonly Texture2D _configFileOverlayIcon = ResourceLoader.Load<Texture2D>("uid://brsdisqgeah5n");
     private readonly Texture2D _targetsFileOverlayIcon = ResourceLoader.Load<Texture2D>("uid://xy5ad1lc24lv");
+    private readonly Texture2D _unknownFileOverlayIcon = ResourceLoader.Load<Texture2D>("uid://7rqmyeiy4y82");
 
     private (Texture2D Icon, Texture2D? OverlayIcon) GetIconForFileExtension(string fileExtension)
     {
@@ -41,7 +42,7 @@ public partial class SolutionExplorerPanel
             ".png" or ".jpg" or ".jpeg" or ".gif" or ".bmp" or ".svg" or ".ico" or ".avif" or ".webp" => _imageFileIcon,
             ".fs" => _fSharpIcon,
             ".xml" or ".nuspec" => _xmlIcon,
-            _ => _csIcon
+            _ => _genericFileIcon
         };
         var overlayTexture = fileExtension switch
         {
@@ -50,6 +51,10 @@ public partial class SolutionExplorerPanel
             ".targets" => _targetsFileOverlayIcon,
             _ => null
         };
+        if (overlayTexture is null && texture == _genericFileIcon)
+        {
+            overlayTexture = _unknownFileOverlayIcon;
+        }
         
         return (texture, overlayTexture);
     }
